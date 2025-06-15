@@ -1,0 +1,383 @@
+VOLTFLOW CRM - CURRENT BUSINESS FLOW (9 STEPS)
+=====================================================
+
+This document explains exactly what happens when a lead comes into VoltFlow CRM
+and how it moves through the entire system from first contact to final payment.
+
+================================================================================
+STEP 1: LEAD ENTERS SYSTEM 📞
+================================================================================
+
+WHAT HAPPENS:
+- Customer calls your business OR fills out website contact form
+- You create a NEW LEAD record in VoltFlow
+- System assigns unique Lead ID (example: L001, L002, etc.)
+
+LEAD STATUS: "New" 🆕
+REQUIRED INFO:
+- Lead name
+- Phone number  
+- Email (if available)
+- Estimated job value
+- Source (where they came from: website, referral, Google, etc.)
+
+USER ACTIONS:
+- Open VoltFlow → Go to Leads page
+- Click "Add New Lead"
+- Fill out lead form with customer info
+- Save lead record
+
+EXAMPLE:
+Lead #L001: "Sarah Connor called about kitchen lighting installation"
+Status: New
+Phone: (555) 123-4567
+Estimated Value: $1,200
+Source: Google Search
+
+================================================================================
+STEP 2: CONTACT THE LEAD 📱
+================================================================================
+
+WHAT HAPPENS:
+- You call or email the lead back
+- You discuss their electrical needs
+- You ask qualifying questions
+- You schedule site visit if needed
+
+LEAD STATUS: "Contacted" 📞
+REQUIRED ACTIONS:
+- Make contact within 24 hours (business rule)
+- Add contact notes to lead record
+- Update lead status manually
+
+USER ACTIONS:
+- Open Lead record → Click "Contact Lead" button
+- Call customer and discuss their needs
+- Add notes: "Spoke with Sarah, needs 4 pendant lights over kitchen island"
+- Change status from "New" to "Contacted"
+
+EXAMPLE:
+Lead #L001: Sarah Connor
+Status: Contacted ✓
+Notes: "Spoke 5/23 - Wants pendant lighting over kitchen island, 
+       budget around $1,200, available weekends for install"
+Next Follow-up: 5/25/2024
+
+================================================================================
+STEP 3: QUALIFY THE LEAD ✅
+================================================================================
+
+WHAT HAPPENS:
+- You determine if lead is serious and has budget
+- You confirm they want to move forward
+- You gather detailed requirements
+- You decide if it's worth pursuing
+
+LEAD STATUS: "Qualified" ✅
+QUALIFICATION CRITERIA:
+- Has realistic budget for the work
+- Has decision-making authority  
+- Has reasonable timeline expectations
+- Job is profitable for your business
+
+USER ACTIONS:
+- Review lead information and notes
+- Confirm customer is serious buyer
+- Click "Mark Qualified" if they meet criteria
+- OR mark "Closed-Lost" if not qualified
+
+EXAMPLE:
+Lead #L001: Sarah Connor  
+Status: Qualified ✓
+Notes: "Confirmed $1,200 budget, homeowner, wants work done next month.
+       Good candidate for quote."
+Qualification Date: 5/25/2024
+
+================================================================================
+STEP 4: SEND QUOTE/PROPOSAL 📄
+================================================================================
+
+WHAT HAPPENS:
+- You create detailed quote for the electrical work
+- You include materials, labor, timeline
+- You email quote to customer
+- You set quote expiration date
+
+LEAD STATUS: "Proposal Sent" 📤
+QUOTE DETAILS:
+- Line items (materials + labor)
+- Total amount
+- Payment terms
+- Work timeline
+- Quote valid until date
+
+USER ACTIONS:
+- Go to Quotes page → Click "Create New Quote"
+- Select Lead #L001 as the customer
+- Add line items: "4 pendant lights - $800, Installation labor - $400"
+- Set total: $1,200
+- Set expiration: 30 days
+- Email quote to customer
+
+EXAMPLE:
+Quote #Q001 for Lead #L001: Sarah Connor
+Items: 4 pendant lights ($800) + Installation ($400) = $1,200
+Sent: 5/26/2024
+Valid Until: 6/25/2024
+Status: Sent
+
+================================================================================
+STEP 5: CUSTOMER DECISION 🤔
+================================================================================
+
+WHAT HAPPENS:
+- Customer reviews your quote
+- They decide YES or NO
+- They might negotiate or ask questions
+- You update lead status based on their decision
+
+POSSIBLE OUTCOMES:
+🎉 YES = Customer accepts quote
+❌ NO = Customer rejects quote  
+🤝 MAYBE = Customer wants to negotiate
+
+LEAD STATUS OPTIONS:
+- "Negotiation" (if discussing changes)
+- "Closed-Won" (if they say YES)
+- "Closed-Lost" (if they say NO)
+
+USER ACTIONS:
+IF CUSTOMER SAYS YES:
+- Open Lead record
+- Change status to "Closed-Won"
+- Click "Convert to Client" button
+
+IF CUSTOMER SAYS NO:
+- Change status to "Closed-Lost"
+- Add reason: "Went with cheaper competitor"
+
+EXAMPLE:
+Lead #L001: Sarah Connor
+Customer Response: "YES! Let's do it!"
+Status: Closed-Won ✓
+Date: 5/28/2024
+
+================================================================================
+STEP 6: CONVERT TO CLIENT 👤
+================================================================================
+
+WHAT HAPPENS:
+- You manually convert the qualified lead to a client
+- System creates new CLIENT record
+- Client inherits lead information
+- Lead is marked as successfully converted
+
+CLIENT STATUS: "Prospective" 🎯
+CONVERSION PROCESS:
+- Click "Convert to Client" on lead
+- Fill out conversion form
+- Add client type (Residential/Commercial)
+- Add service address and billing info
+- System creates Client #C001
+
+USER ACTIONS:
+- Open Lead #L001 → Click "Convert to Client"
+- Fill conversion form:
+  * Client Type: Residential
+  * Service Address: 123 Main St
+  * Billing Address: Same as service
+  * Preferred Contact: Phone
+- Click "Create Client"
+
+EXAMPLE:
+NEW CLIENT CREATED:
+Client #C001: Sarah Connor (converted from Lead #L001)
+Type: Residential  
+Status: Prospective
+Address: 123 Main St, City, State
+Phone: (555) 123-4567
+Lead Source: Google Search
+
+================================================================================
+STEP 7: CREATE AND SCHEDULE JOB 📅
+================================================================================
+
+WHAT HAPPENS:
+- You create WORK ORDER from the approved quote
+- You assign technician to the job
+- You schedule the work date/time
+- You prepare materials list
+
+JOB STATUS: "Scheduled" 📅
+JOB DETAILS:
+- Linked to Client #C001
+- Linked to Quote #Q001  
+- Assigned technician
+- Scheduled date/time
+- Materials needed
+
+USER ACTIONS:
+- Go to Quotes → Find Quote #Q001
+- Click "Create Job" button
+- Fill job creation form:
+  * Assign to: Mike Johnson
+  * Schedule Date: 6/5/2024
+  * Time: 9:00 AM - 1:00 PM
+  * Priority: Medium
+- Click "Create Job"
+
+EXAMPLE:
+Job #J001: Kitchen pendant lighting installation
+Client: Sarah Connor (#C001)
+Quote: #Q001 ($1,200)
+Technician: Mike Johnson
+Scheduled: 6/5/2024 9:00 AM
+Status: Scheduled
+
+================================================================================
+STEP 8: DO THE WORK 🔧
+================================================================================
+
+WHAT HAPPENS:
+- Technician goes to job site
+- Work is performed according to quote
+- Job status is updated as work progresses
+- Photos and notes are added
+
+JOB STATUS PROGRESSION:
+"Scheduled" → "Dispatched" → "In Progress" → "Completed"
+
+JOB TRACKING:
+- Start time
+- Materials used
+- Hours worked  
+- Photos of completed work
+- Customer signature
+
+USER ACTIONS:
+DAY OF WORK:
+- Change job status to "Dispatched" (technician on the way)
+- Change to "In Progress" (work started)
+- Add notes: "Installing pendant lights, customer very happy"
+- Upload photos of completed work
+- Change to "Completed" (work finished)
+
+EXAMPLE:
+Job #J001: Kitchen pendant lighting installation
+Status: Completed ✅
+Work Date: 6/5/2024
+Technician: Mike Johnson
+Hours: 3.5 hours (vs 4 hours estimated)
+Materials Used: 4 pendant lights, electrical wire, junction boxes
+Customer Notes: "Very satisfied, lights look great!"
+Photos: 6 photos uploaded
+
+================================================================================
+STEP 9: CREATE INVOICE AND GET PAID 💰
+================================================================================
+
+WHAT HAPPENS:
+- You create INVOICE from completed job
+- Invoice is emailed to customer
+- You track payment status
+- You follow up on overdue payments
+
+INVOICE STATUS PROGRESSION:
+"Draft" → "Sent" → "Viewed" → "Paid"
+
+INVOICE DETAILS:
+- Based on completed Job #J001
+- Final amount (may differ from quote)
+- Payment terms (Net 30, etc.)
+- Due date
+
+USER ACTIONS:
+- Go to Jobs → Find Job #J001
+- Click "Create Invoice" button
+- Fill invoice form:
+  * Final Amount: $1,180 (slightly less than quote)
+  * Payment Terms: Net 30
+  * Due Date: 7/5/2024
+  * Description: "Kitchen pendant lighting installation"
+- Email invoice to customer
+
+EXAMPLE:
+Invoice #INV001: Kitchen pendant lighting
+Client: Sarah Connor (#C001)
+Job: #J001
+Amount: $1,180.00
+Sent: 6/5/2024
+Due: 7/5/2024
+Status: Sent
+
+WHEN CUSTOMER PAYS:
+- Update invoice status to "Paid"
+- Record payment date
+- Update client status to "Active" (first completed job)
+
+================================================================================
+CLIENT STATUS PROGRESSION SUMMARY
+================================================================================
+
+THROUGHOUT THE PROCESS, CLIENT STATUS CHANGES:
+
+Step 6: Client created → Status: "Prospective" 🎯
+Step 9: First payment received → Status: "Active" ⚡
+Future: Multiple jobs completed → Status: "VIP" ⭐
+Future: No jobs for 12+ months → Status: "Inactive" 😴
+
+================================================================================
+KEY PAIN POINTS IN CURRENT SYSTEM
+================================================================================
+
+❌ EVERYTHING IS MANUAL
+- No automatic status updates
+- No automatic follow-ups  
+- No automatic conversions
+- Lots of clicking and form filling
+
+❌ EASY TO FORGET STEPS
+- Technician forgets to update job status
+- Office forgets to send invoice
+- Customer payments not tracked properly
+
+❌ NO BUSINESS AUTOMATION  
+- No automatic VIP promotion
+- No automatic payment reminders
+- No automatic follow-up scheduling
+
+❌ DISCONNECTED MODULES
+- Lead info doesn't auto-populate client
+- Job completion doesn't trigger invoice
+- Payment doesn't update client status
+
+================================================================================
+WHAT SHOULD BE AUTOMATIC (FUTURE IMPROVEMENTS)
+================================================================================
+
+🤖 AUTOMATIC TRIGGERS:
+- Quote accepted → Auto create client + job
+- Job completed → Auto create invoice  
+- Payment received → Auto update client status
+- Multiple jobs → Auto promote to VIP
+
+🤖 AUTOMATIC NOTIFICATIONS:
+- Text technician when job is scheduled
+- Email customer when work is completed
+- Send payment reminders for overdue invoices
+- Alert office when quotes are about to expire
+
+🤖 AUTOMATIC BUSINESS RULES:
+- VIP clients get priority scheduling
+- Overdue invoices trigger collection process
+- Inactive clients get win-back campaigns
+- High-value jobs require manager approval
+
+================================================================================
+CONCLUSION
+================================================================================
+
+CURRENT STATE: Manual 9-step process that works but requires constant attention
+FUTURE STATE: Automated workflow that guides users and handles routine tasks
+
+The foundation is built - now we need the automation layer! 

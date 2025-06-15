@@ -1,0 +1,36 @@
+diff --git a/node_modules/@supabase/auth-helpers-nextjs/tsconfig.json b/node_modules/@supabase/auth-helpers-nextjs/tsconfig.json
+index 204a2ad..8cf1a16 100644
+--- a/node_modules/@supabase/auth-helpers-nextjs/tsconfig.json
++++ b/node_modules/@supabase/auth-helpers-nextjs/tsconfig.json
+@@ -1,9 +1,27 @@
+ {
++	// "extends": "./tsconfig.base.json",
++  
+ 	"compilerOptions": {
+-		"incremental": false,
+-		"importHelpers": true
++	  // your custom overrides
++	  "incremental": false,
++	  "importHelpers": true,
++  
++	  // (optional) if you don’t want any extends at all, just comment out the line above
++	  // and uncomment these minimal options:
++	  //
++	  // "target": "esnext",
++	  // "module": "esnext",
++	  // "moduleResolution": "node",
++	  // "jsx": "preserve",
++	  // "strict": true,
++	  // "skipLibCheck": true,
++	  // "forceConsistentCasingInFileNames": true,
++	  // "baseUrl": ".",
++	  // "paths": { "@/*": ["src/*"] }
+ 	},
++  
++	// only compile your source
+ 	"include": ["src"],
+ 	"exclude": ["node_modules"]
+-}
++  }
++  
+\ No newline at end of file

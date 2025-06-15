@@ -1,0 +1,9 @@
+# .prettierignore
+node_modules
+.next
+out
+build
+.env
+.env.local
+.env.production
+.env.development 

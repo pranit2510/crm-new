@@ -1,0 +1,221 @@
+VOLTFLOW CRM - COMPLETE SYSTEM FLOW
+===================================
+
+1. USER AUTHENTICATION & ACCESS
+-------------------------------
+- Users can sign up and log in
+- Authentication handled through Supabase
+- Row Level Security (RLS) policies control data access
+- Users can access all features after authentication
+
+2. LEAD MANAGEMENT
+------------------
+Status Flow:
+New → Contacted → Qualified → Converted to Client
+
+Lead Information:
+- Name
+- Email
+- Phone
+- Company
+- Source (where the lead came from)
+- Status (new, contacted, qualified, lost)
+- Notes
+- Assigned To (staff member)
+
+Actions:
+- Create new lead
+- Update lead status
+- Add notes
+- Assign to staff
+- Convert to client
+- Mark as lost
+
+3. CLIENT MANAGEMENT
+-------------------
+Status:
+- Active
+- Inactive
+
+Client Information:
+- Name
+- Email
+- Phone
+- Company
+- Address
+- Notes
+- Status
+
+Actions:
+- Create new client
+- Update client information
+- View client history
+- Manage client status
+- View associated jobs, quotes, and invoices
+
+4. JOB MANAGEMENT
+----------------
+Status Flow:
+Pending → In Progress → Completed → Cancelled
+
+Job Information:
+- Title
+- Description
+- Status
+- Client (linked)
+- Start Date
+- End Date
+- Budget
+- Priority (low, medium, high)
+
+Actions:
+- Create new job
+- Update job status
+- Track progress
+- Manage deadlines
+- Set priorities
+- Track budget
+
+5. QUOTE MANAGEMENT
+------------------
+Status Flow:
+Draft → Sent → Accepted/Rejected
+
+Quote Information:
+- Client (linked)
+- Job (linked)
+- Amount
+- Status
+- Valid Until
+- Terms
+- Notes
+
+Actions:
+- Create quote
+- Send to client
+- Track status
+- Convert to invoice
+- Update terms
+- Set validity period
+
+6. INVOICE MANAGEMENT
+--------------------
+Status Flow:
+Draft → Sent → Paid/Overdue
+
+Invoice Information:
+- Client (linked)
+- Job (linked)
+- Quote (linked)
+- Amount
+- Status
+- Due Date
+- Payment Terms
+- Notes
+
+Actions:
+- Create invoice
+- Send to client
+- Track payment status
+- Record payments
+- Handle overdue invoices
+- Generate payment reminders
+
+7. CALENDAR INTEGRATION
+----------------------
+Features:
+- Job scheduling
+- Deadline tracking
+- Meeting scheduling
+- Important date reminders
+- Timeline view of all activities
+
+8. REPORTING & ANALYTICS
+------------------------
+Available Reports:
+- Lead conversion rates
+- Job completion rates
+- Revenue tracking
+- Client activity
+- Quote success rates
+- Invoice payment status
+- Staff performance
+- Business metrics
+
+9. AI-POWERED FEATURES
+---------------------
+- Automated insights
+- Predictive analytics
+- Smart recommendations
+- Data analysis
+- Performance optimization
+
+10. DATA RELATIONSHIPS
+---------------------
+Primary Flow:
+Lead → Client → Job → Quote → Invoice
+
+Relationships:
+- One client can have multiple jobs
+- One job can have multiple quotes
+- One quote can lead to one invoice
+- All entities are linked to clients
+- Jobs can exist without quotes
+- Invoices can be created from quotes or directly
+
+11. SYSTEM FEATURES
+------------------
+- Real-time updates
+- Data validation
+- Error handling
+- Audit trails
+- Data backup
+- Security measures
+- Performance optimization
+
+12. USER INTERFACE
+-----------------
+- Modern, responsive design
+- Intuitive navigation
+- Form-based data entry
+- List views for data management
+- Search and filter capabilities
+- Quick actions
+- Status indicators
+
+13. INTEGRATION POINTS
+---------------------
+- Email integration
+- Calendar sync
+- Payment processing
+- Document generation
+- Notification system
+- API endpoints
+
+14. SECURITY MEASURES
+--------------------
+- User authentication
+- Role-based access
+- Data encryption
+- Secure API endpoints
+- Audit logging
+- Backup systems
+
+15. MAINTENANCE & SUPPORT
+------------------------
+- Regular updates
+- Bug fixes
+- Performance monitoring
+- User support
+- Documentation
+- Training materials
+
+This CRM system is designed for service-based businesses that need to:
+1. Track and convert leads
+2. Manage client relationships
+3. Handle job assignments
+4. Process quotes and invoices
+5. Monitor business performance
+6. Make data-driven decisions
+
+The system provides a complete solution for managing the entire customer lifecycle from initial contact to project completion and payment. 
