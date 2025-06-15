@@ -10,7 +10,7 @@ import nodemailer                             from 'nodemailer'
 
 export async function POST (
   _req   : NextRequest,
-  { params }: { params: { id: string } }
+  { params }: any 
 ) {
   /* ── Supabase --------------------------------------------------------- */
   const supabase = createServerComponentClient/*<Database>*/({ cookies })

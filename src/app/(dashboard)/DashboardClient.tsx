@@ -3,6 +3,7 @@
 import { useState, useLayoutEffect } from 'react'
 import dynamic from 'next/dynamic'
 import Link from 'next/link'
+import { useRoleRedirect } from '@/lib/hooks/useRoleRedirect';
 import {
   PlusCircle,
   Users,
@@ -35,7 +36,7 @@ export default function DashboardClient({ initialStats, defaultLayout }: Props) 
   const [layout, setLayout] = useState<any[]>(defaultLayout)
   const [edit,   setEdit]   = useState(false)
   const [mounted,setMounted]= useState(false)
-
+  useRoleRedirect(['admin', 'user']); 
   useLayoutEffect(() => {
     const saved = localStorage.getItem('dashboardLayout')
     if (saved) try { setLayout(JSON.parse(saved)) } catch {}

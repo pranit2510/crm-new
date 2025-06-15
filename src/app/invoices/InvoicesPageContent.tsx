@@ -10,7 +10,7 @@ import {
   } from '@/lib/supabase-client'
   
 import { quoteConversionOperations } from '@/lib/quote-conversion'
-
+import { useRoleRedirect } from '@/lib/hooks/useRoleRedirect';
   
 import SkeletonLoader               from '@/components/ui/SkeletonLoader'
 import { invoiceStages }            from '@/lib/flowStates'
@@ -57,7 +57,7 @@ export default function InvoicesPageContent(
   const [status,  setStatus]  = useState<InvoiceStatus | 'all'>('all')
   const [overdue, setOverdue] = useState<'all' | 'overdue' | 'not'>('all')
   const [busy,    setBusy]    = useState<number | null>(null)
-
+  useRoleRedirect(['admin', 'user']); 
   // top-level inside the component
   const sendMail = async (id: number) => {
     setBusy(id)

@@ -6,6 +6,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import Sidebar from './Sidebar';
 import Header from './Header';
 import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
+import { useRouter } from 'next/navigation';
 
 interface ClientLayoutProps {
   children: React.ReactNode;
@@ -14,7 +15,7 @@ interface ClientLayoutProps {
 export function ClientLayout({ children }: ClientLayoutProps) {
   const pathname = usePathname();
   const { user, loading } = useAuth();
-
+  const router = useRouter();
   // Check if we're on a public page
   const isPublicPage = pathname === '/login' || pathname === '/register';
 
@@ -32,8 +33,8 @@ export function ClientLayout({ children }: ClientLayoutProps) {
   }
 
   // If we're not on a public page and there's no user, redirect to login
-  if (!user) {
-    window.location.href = '/login';
+  if (!user && !loading) {
+    router.push('/login');
     return null;
   }
 

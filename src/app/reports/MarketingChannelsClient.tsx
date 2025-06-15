@@ -22,6 +22,11 @@ export interface MarketingChannelsClientProps {
   initialLeadReport?: { source: string; total: number; qualified: number }[]
 }
 
+ 
+
+  
+
+
 export default function MarketingChannelsClient ({
   initialMonth,
   initialChannels,
@@ -41,6 +46,15 @@ export default function MarketingChannelsClient ({
     close_rate:0, cost_per_lead:0, roi:0,
   })
   const [newRow, setNewRow] = useState(blankRow())
+  const [userRole, setUserRole] = useState<string | null>(null);
+
+  useEffect(() => {
+    const role = localStorage.getItem('user_role');
+    if (role) {
+      setUserRole(role);
+    }
+  }, []);
+
 
 /* ---------------- fetch when month changes ----------------------- */
   useEffect(() => {
@@ -206,6 +220,7 @@ export default function MarketingChannelsClient ({
                     <td className={`px-4 py-3 font-medium ${m.roi>=0?'text-green-600':'text-red-600'}`}>
                       {m.roi.toFixed(1)}%
                     </td>
+                    {userRole !== 'user' && (
                     <td className="px-4 py-3">
                       {editing?(
                         <>
@@ -220,6 +235,7 @@ export default function MarketingChannelsClient ({
                         </>
                       )}
                     </td>
+                    )}
                   </tr>
                 )
               })}
@@ -252,10 +268,14 @@ export default function MarketingChannelsClient ({
         {/* add button */}
         {!isAdding && (
           <div className="mt-4 flex justify-center">
-            <button onClick={()=>setIsAdding(true)}
-                    className="flex items-center px-4 py-2 border text-blue-600 rounded">
-              <Plus size={16} className="mr-2"/> Add Channel
-            </button>
+            {userRole !== 'user' && (
+              <button onClick={()=>setIsAdding(true)}
+              className="flex items-center px-4 py-2 border text-blue-600 rounded">
+        <Plus size={16} className="mr-2"/> Add Channel
+      </button>
+
+)}
+            
           </div>
         )}
       </div>

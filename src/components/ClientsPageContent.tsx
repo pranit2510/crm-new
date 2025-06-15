@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { Plus, Search } from 'lucide-react'
 import ClientsTable from '@/components/ClientsTable'
 import type { ClientStatus } from '@/components/StatusDropdown'
+import { useRoleRedirect } from '@/lib/hooks/useRoleRedirect';
 
 
 /* ---------- shared types --------------------------------------------- */
@@ -36,6 +37,7 @@ export default function ClientsPageContent({ initialClients }: Props) {
   const [clients, setClients] = useState(initialClients)
   const [search,  setSearch]  = useState('')
   const [tab,     setTab]     = useState<ClientStatus | 'All'>('All')
+  useRoleRedirect(['admin', 'user']); 
 
   /* live counters */
   const counts: StatusCounts = useMemo(() => ({

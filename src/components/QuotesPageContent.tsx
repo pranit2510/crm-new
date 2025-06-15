@@ -9,7 +9,7 @@ import {
   Edit3,
   Trash2,
 } from 'lucide-react'
-
+import { useRoleRedirect } from '@/lib/hooks/useRoleRedirect';
 import {
   quoteOperations,
   invoiceOperations,          // still imported – may be useful elsewhere
@@ -44,7 +44,7 @@ export default function QuotesPageContent({ initialQuotes }: Props) {
   const [status, setStatus]   = useState<QuoteStatus | 'all'>('all')
   const [busy, setBusy]       = useState<number | null>(null)     // generic row-busy
   const [emailBusy, setEmailBusy] = useState<number | null>(null) // send-mail spinner
-
+  useRoleRedirect(['admin', 'user']); 
   /* ---------- send-e-mail ------------------------------------------- */
   const sendEmail = async (qid: number) => {
     setEmailBusy(qid)

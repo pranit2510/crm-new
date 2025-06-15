@@ -11,7 +11,7 @@ import {
   AlertCircle,
 } from 'lucide-react'
 import { jobOperations } from '@/lib/supabase-client'
-
+import { useRoleRedirect } from '@/lib/hooks/useRoleRedirect';
 /* ─── helper types ──────────────────────────────────────────────────── */
 export type JobStatus   = 'pending' | 'in_progress' | 'completed' | 'cancelled'
 export type JobPriority = 'low' | 'medium' | 'high'
@@ -80,7 +80,7 @@ export default function JobsPageContent({ initialJobs, initialTechs }: JobsPageP
   const [status,   setStatus]   = useState<JobStatus | 'all'>('all')
   const [priority, setPriority] = useState<JobPriority | 'all'>('all')
   const [busy,     setBusy]     = useState<number | null>(null)
-
+  useRoleRedirect(['admin', 'user']); 
   /* helper: tech-id → human name */
   const techName = (id: string) =>
     initialTechs.find(t => t.id.toString() === id.toString())?.name ?? id

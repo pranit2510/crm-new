@@ -8,6 +8,8 @@ import Link from 'next/link'
 import { PlusCircle, Search, Lightbulb } from 'lucide-react'
 import LeadsTable from '@/components/LeadsTable'
 import type { Lead } from '@/lib/supabase'
+import { useRoleRedirect } from '@/lib/hooks/useRoleRedirect';
+
 
 /* ---- helper types --------------------------------------------------- */
 export interface LeadStatusCounts {
@@ -62,6 +64,7 @@ export default function LeadsPageContent({ initialLeads }: Props) {
   const handleStatus = (id: number, status: Lead['status']) =>
     setLeads(prev => prev.map(l => (l.id === id ? { ...l, status } : l)))
 
+  useRoleRedirect(['admin', 'user']); 
   /* ---- ui ------------------------------------------------------------ */
   return (
     <div className="fade-in">

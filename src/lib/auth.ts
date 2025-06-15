@@ -5,7 +5,7 @@ export interface AuthUser {
   id: string
   email: string
   name?: string
-  role?: 'Admin' | 'Technician' | 'Manager'
+  role?: 'User' | 'Technician'
   avatar_url?: string
 }
 
@@ -16,7 +16,7 @@ export interface LoginCredentials {
 
 export interface SignUpCredentials extends LoginCredentials {
   name: string
-  role?: 'Admin' | 'Technician' | 'Manager'
+  role?: 'User' | 'Technician'
 }
 
 class AuthService {
@@ -107,16 +107,16 @@ class AuthService {
   // Get current user
   async getCurrentUser(): Promise<AuthUser | null> {
     try {
-      const { data: { user } } = await supabase.auth.getUser()
-      
-      if (!user) return null
-      
-      return await this.getUserProfile(user)
+      const { data: { session }, error } = await supabase.auth.getSession();
+      if (error || !session?.user) return null;
+  
+      return await this.getUserProfile(session.user);
     } catch (error) {
-      console.error('Error getting current user:', error)
-      return null
+      console.error('Error getting current user:', error);
+      return null;
     }
   }
+  
 
   // Get user profile from database
   private async getUserProfile(user: User): Promise<AuthUser> {

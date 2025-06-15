@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import { technicianOperations } from '@/lib/supabase-client'
-
+import { useRoleRedirect } from '@/lib/hooks/useRoleRedirect';
 type Row = {
   id: string
   name: string
@@ -16,6 +16,7 @@ type Row = {
 export default function TechniciansTable({ initial }: { initial: Row[] }) {
   const [rows, setRows] = useState<Row[]>(initial)
   const [busy, setBusy] = useState<string | null>(null)
+  useRoleRedirect(['admin', 'user']); 
 
   const remove = async (id: string) => {
     if (!confirm('Delete this technician?')) return

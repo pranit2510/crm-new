@@ -4,12 +4,10 @@ import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { Eye, EyeOff, Zap, LogIn, AlertCircle } from 'lucide-react';
-import { authService } from '@/lib/auth';
-import type { LoginCredentials } from '@/lib/auth';
 import { supabase } from '@/lib/supabase';
 
 const LoginPage = () => {
-  const [credentials, setCredentials] = useState<LoginCredentials>({
+  const [credentials, setCredentials] = useState({
     email: '',
     password: ''
   });
@@ -18,43 +16,74 @@ const LoginPage = () => {
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
 
-  // Check if user is already logged in
   useEffect(() => {
-    const checkAuth = async () => {
-      const user = await authService.getCurrentUser();
-      if (user) {
+    const checkSession = async () => {
+      const {
+        data: { session }
+      } = await supabase.auth.getSession();
+      if (session?.user?.id) {
         router.push('/');
       }
     };
-    checkAuth();
+    checkSession();
   }, [router]);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     setError(null);
-    const { error } = await supabase.auth.signInWithPassword({ email: credentials.email, password: credentials.password });
-    if (error) {
-      setError(error.message);
+
+    const { data: authData, error: loginError } = await supabase.auth.signInWithPassword({
+      email: credentials.email,
+      password: credentials.password
+    });
+
+    if (loginError) {
+      setError(loginError.message);
+      setLoading(false);
+      return;
+    }
+
+    const userId = authData?.user?.id;
+    if (!userId) {
+      setError('Unable to find user ID after login.');
+      setLoading(false);
+      return;
+    }
+
+    // Fetch user role from user_profiles
+    const { data: profile, error: profileError } = await supabase
+      .from('user_profiles')
+      .select('role')
+      .eq('id', userId)
+      .single();
+
+    if (profileError || !profile?.role) {
+      setError('Failed to fetch user role.');
+      setLoading(false);
+      return;
+    }
+
+    const role = profile.role.toLowerCase();
+    localStorage.setItem('user_role', role); 
+    if (role === 'technician') {
+      router.push('/reports');
     } else {
       router.push('/');
     }
+
+    setLoading(false);
   };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    setCredentials(prev => ({
-      ...prev,
-      [name]: value
-    }));
-    // Clear error when user starts typing
+    setCredentials(prev => ({ ...prev, [name]: value }));
     if (error) setError(null);
   };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-4">
       <div className="max-w-md w-full space-y-8">
-        {/* Logo and Header */}
         <div className="text-center">
           <div className="flex justify-center items-center mb-4">
             <div className="bg-primary p-3 rounded-xl">
@@ -65,10 +94,8 @@ const LoginPage = () => {
           <p className="mt-2 text-gray-600">Sign in to your VoltFlow CRM account</p>
         </div>
 
-        {/* Login Form */}
         <div className="bg-white rounded-xl shadow-lg p-8">
           <form onSubmit={handleLogin} className="space-y-6">
-            {/* Error Display */}
             {error && (
               <div className="bg-red-50 border border-red-200 rounded-lg p-4 flex items-center">
                 <AlertCircle className="h-5 w-5 text-red-500 mr-2 flex-shrink-0" />
@@ -76,7 +103,6 @@ const LoginPage = () => {
               </div>
             )}
 
-            {/* Email Field */}
             <div>
               <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
                 Email Address
@@ -95,7 +121,6 @@ const LoginPage = () => {
               />
             </div>
 
-            {/* Password Field */}
             <div>
               <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-2">
                 Password
@@ -124,7 +149,6 @@ const LoginPage = () => {
               </div>
             </div>
 
-            {/* Remember Me & Forgot Password */}
             <div className="flex items-center justify-between">
               <div className="flex items-center">
                 <input
@@ -145,7 +169,6 @@ const LoginPage = () => {
               </Link>
             </div>
 
-            {/* Submit Button */}
             <button
               type="submit"
               disabled={loading || !credentials.email || !credentials.password}
@@ -169,7 +192,6 @@ const LoginPage = () => {
             </button>
           </form>
 
-          {/* Sign Up Link */}
           <div className="mt-6 text-center">
             <p className="text-sm text-gray-600">
               Don't have an account?{' '}
@@ -183,7 +205,6 @@ const LoginPage = () => {
           </div>
         </div>
 
-        {/* Footer */}
         <div className="text-center text-sm text-gray-500">
           <p>&copy; 2024 VoltFlow CRM. All rights reserved.</p>
         </div>
@@ -192,4 +213,4 @@ const LoginPage = () => {
   );
 };
 
-export default LoginPage; 
+export default LoginPage;
