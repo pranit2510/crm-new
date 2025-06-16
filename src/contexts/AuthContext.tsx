@@ -10,6 +10,7 @@ interface AuthContextType {
   initialized: boolean;
   login: (email: string, password: string) => Promise<{ success: boolean; error?: string }>;
   logout: () => Promise<void>;
+  clearAuthData: () => Promise<void>;
   isAuthenticated: boolean;
 }
 
@@ -104,12 +105,40 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     }
   };
 
+  const clearAuthData = async () => {
+    try {
+      // Clear Supabase session
+      await authService.logout();
+      
+      // Clear local storage
+      if (typeof window !== 'undefined') {
+        Object.keys(localStorage).forEach(key => {
+          if (key.startsWith('sb-')) {
+            localStorage.removeItem(key);
+          }
+        });
+        
+        // Clear any user role data
+        localStorage.removeItem('user_role');
+      }
+      
+      setUser(null);
+      setLoading(false);
+      setInitialized(true);
+      
+      console.log('Auth data cleared successfully');
+    } catch (error) {
+      console.error('Error clearing auth data:', error);
+    }
+  };
+
   const value: AuthContextType = {
     user,
     loading,
     initialized,
     login,
     logout,
+    clearAuthData,
     isAuthenticated: !!user,
   };
 

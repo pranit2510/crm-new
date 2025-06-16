@@ -7,6 +7,7 @@ import Sidebar from './Sidebar';
 import Header from './Header';
 import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
 import { useRouter } from 'next/navigation';
+import { AuthDebug } from '@/components/debug/AuthDebug';
 
 interface ClientLayoutProps {
   children: React.ReactNode;
@@ -63,6 +64,7 @@ export function ClientLayout({ children }: ClientLayoutProps) {
           {children}
         </main>
       </div>
+      <AuthDebug />
     </div>
   );
 } 
