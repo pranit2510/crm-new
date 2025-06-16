@@ -7,6 +7,7 @@ import type { AuthUser } from '@/lib/auth';
 interface AuthContextType {
   user: AuthUser | null;
   loading: boolean;
+  initialized: boolean;
   login: (email: string, password: string) => Promise<{ success: boolean; error?: string }>;
   logout: () => Promise<void>;
   isAuthenticated: boolean;
@@ -29,18 +30,23 @@ interface AuthProviderProps {
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [user, setUser] = useState<AuthUser | null>(null);
   const [loading, setLoading] = useState(true);
+  const [initialized, setInitialized] = useState(false);
 
   useEffect(() => {
     // Check for existing session
     const initAuth = async () => {
       try {
+        console.log('AuthContext: Initializing auth...');
         const currentUser = await authService.getCurrentUser();
+        console.log('AuthContext: Current user:', currentUser);
         setUser(currentUser);
       } catch (error) {
         console.error('Error initializing auth:', error);
         setUser(null);
       } finally {
         setLoading(false);
+        setInitialized(true);
+        console.log('AuthContext: Initialization complete');
       }
     };
 
@@ -48,8 +54,10 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
     // Listen for auth state changes
     const { data: { subscription } } = authService.onAuthStateChange((user) => {
+      console.log('AuthContext: Auth state changed:', user);
       setUser(user);
       setLoading(false);
+      setInitialized(true);
     });
 
     return () => {
@@ -88,6 +96,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const value: AuthContextType = {
     user,
     loading,
+    initialized,
     login,
     logout,
     isAuthenticated: !!user,

@@ -16,15 +16,15 @@ const LoginPage = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
-  const { user, loading: authLoading } = useAuth();
+  const { user, loading: authLoading, initialized } = useAuth();
 
   useEffect(() => {
-    // Only redirect if auth is not loading and user exists
-    if (!authLoading && user) {
-      console.log('Login page: Redirecting to dashboard', { user, authLoading });
+    // Only redirect if auth is fully initialized and user exists
+    if (initialized && !authLoading && user) {
+      console.log('Login page: Redirecting to dashboard', { user, authLoading, initialized });
       router.push('/');
     }
-  }, [user, authLoading, router]);
+  }, [user, authLoading, initialized, router]);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -80,7 +80,7 @@ const LoginPage = () => {
   };
 
   // Show loading while auth context is initializing
-  if (authLoading) {
+  if (!initialized || authLoading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>

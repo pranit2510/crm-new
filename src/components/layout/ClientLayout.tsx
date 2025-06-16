@@ -14,20 +14,21 @@ interface ClientLayoutProps {
 
 export function ClientLayout({ children }: ClientLayoutProps) {
   const pathname = usePathname();
-  const { user, loading } = useAuth();
+  const { user, loading, initialized } = useAuth();
   const router = useRouter();
   // Check if we're on a public page
   const isPublicPage = pathname === '/login' || pathname === '/register';
 
   // Handle redirect in useEffect to avoid setState during render
   useEffect(() => {
-    if (!loading && !user && !isPublicPage) {
-      console.log('ClientLayout: Redirecting to login', { user, loading, isPublicPage, pathname });
+    // Only redirect if auth is fully initialized
+    if (initialized && !loading && !user && !isPublicPage) {
+      console.log('ClientLayout: Redirecting to login', { user, loading, initialized, isPublicPage, pathname });
       router.push('/login');
     }
-  }, [user, loading, isPublicPage, router, pathname]);
+  }, [user, loading, initialized, isPublicPage, router, pathname]);
 
-  if (loading) {
+  if (!initialized || loading) {
     return (
       <div className="flex h-screen items-center justify-center">
         <LoadingSpinner size="lg" />
@@ -41,7 +42,7 @@ export function ClientLayout({ children }: ClientLayoutProps) {
   }
 
   // If we're not on a public page and there's no user, show loading while redirecting
-  if (!user && !loading) {
+  if (!user && !loading && initialized && !isPublicPage) {
     return (
       <div className="flex h-screen items-center justify-center">
         <LoadingSpinner size="lg" />
