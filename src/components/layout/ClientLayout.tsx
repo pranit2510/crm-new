@@ -22,9 +22,10 @@ export function ClientLayout({ children }: ClientLayoutProps) {
   // Handle redirect in useEffect to avoid setState during render
   useEffect(() => {
     if (!loading && !user && !isPublicPage) {
+      console.log('ClientLayout: Redirecting to login', { user, loading, isPublicPage, pathname });
       router.push('/login');
     }
-  }, [user, loading, isPublicPage, router]);
+  }, [user, loading, isPublicPage, router, pathname]);
 
   if (loading) {
     return (

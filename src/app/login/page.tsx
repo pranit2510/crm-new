@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { Eye, EyeOff, Zap, LogIn, AlertCircle } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
+import { useAuth } from '@/contexts/AuthContext';
 
 const LoginPage = () => {
   const [credentials, setCredentials] = useState({
@@ -15,18 +16,15 @@ const LoginPage = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
+  const { user, loading: authLoading } = useAuth();
 
   useEffect(() => {
-    const checkSession = async () => {
-      const {
-        data: { session }
-      } = await supabase.auth.getSession();
-      if (session?.user?.id) {
-        router.push('/');
-      }
-    };
-    checkSession();
-  }, [router]);
+    // Only redirect if auth is not loading and user exists
+    if (!authLoading && user) {
+      console.log('Login page: Redirecting to dashboard', { user, authLoading });
+      router.push('/');
+    }
+  }, [user, authLoading, router]);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -80,6 +78,15 @@ const LoginPage = () => {
     setCredentials(prev => ({ ...prev, [name]: value }));
     if (error) setError(null);
   };
+
+  // Show loading while auth context is initializing
+  if (authLoading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-4">
