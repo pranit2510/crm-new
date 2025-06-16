@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import { usePathname } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
 import Sidebar from './Sidebar';
@@ -19,6 +19,13 @@ export function ClientLayout({ children }: ClientLayoutProps) {
   // Check if we're on a public page
   const isPublicPage = pathname === '/login' || pathname === '/register';
 
+  // Handle redirect in useEffect to avoid setState during render
+  useEffect(() => {
+    if (!loading && !user && !isPublicPage) {
+      router.push('/login');
+    }
+  }, [user, loading, isPublicPage, router]);
+
   if (loading) {
     return (
       <div className="flex h-screen items-center justify-center">
@@ -32,10 +39,13 @@ export function ClientLayout({ children }: ClientLayoutProps) {
     return <>{children}</>;
   }
 
-  // If we're not on a public page and there's no user, redirect to login
+  // If we're not on a public page and there's no user, show loading while redirecting
   if (!user && !loading) {
-    router.push('/login');
-    return null;
+    return (
+      <div className="flex h-screen items-center justify-center">
+        <LoadingSpinner size="lg" />
+      </div>
+    );
   }
 
   return (
