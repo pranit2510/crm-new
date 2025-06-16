@@ -33,20 +33,28 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [initialized, setInitialized] = useState(false);
 
   useEffect(() => {
+    let mounted = true;
+
     // Check for existing session
     const initAuth = async () => {
       try {
         console.log('AuthContext: Initializing auth...');
         const currentUser = await authService.getCurrentUser();
         console.log('AuthContext: Current user:', currentUser);
-        setUser(currentUser);
+        
+        if (mounted) {
+          setUser(currentUser);
+          setLoading(false);
+          setInitialized(true);
+          console.log('AuthContext: Initialization complete');
+        }
       } catch (error) {
         console.error('Error initializing auth:', error);
-        setUser(null);
-      } finally {
-        setLoading(false);
-        setInitialized(true);
-        console.log('AuthContext: Initialization complete');
+        if (mounted) {
+          setUser(null);
+          setLoading(false);
+          setInitialized(true);
+        }
       }
     };
 
@@ -55,12 +63,15 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     // Listen for auth state changes
     const { data: { subscription } } = authService.onAuthStateChange((user) => {
       console.log('AuthContext: Auth state changed:', user);
-      setUser(user);
-      setLoading(false);
-      setInitialized(true);
+      if (mounted) {
+        setUser(user);
+        setLoading(false);
+        setInitialized(true);
+      }
     });
 
     return () => {
+      mounted = false;
       subscription?.unsubscribe();
     };
   }, []);

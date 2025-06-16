@@ -22,7 +22,11 @@ const LoginPage = () => {
     // Only redirect if auth is fully initialized and user exists
     if (initialized && !authLoading && user) {
       console.log('Login page: Redirecting to dashboard', { user, authLoading, initialized });
-      router.push('/');
+      const timer = setTimeout(() => {
+        router.push('/');
+      }, 100); // Small delay to prevent rapid redirects
+      
+      return () => clearTimeout(timer);
     }
   }, [user, authLoading, initialized, router]);
 

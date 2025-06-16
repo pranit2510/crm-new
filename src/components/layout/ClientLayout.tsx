@@ -21,10 +21,14 @@ export function ClientLayout({ children }: ClientLayoutProps) {
 
   // Handle redirect in useEffect to avoid setState during render
   useEffect(() => {
-    // Only redirect if auth is fully initialized
+    // Only redirect if auth is fully initialized and add a small delay to prevent rapid redirects
     if (initialized && !loading && !user && !isPublicPage) {
       console.log('ClientLayout: Redirecting to login', { user, loading, initialized, isPublicPage, pathname });
-      router.push('/login');
+      const timer = setTimeout(() => {
+        router.push('/login');
+      }, 100); // Small delay to prevent rapid redirects
+      
+      return () => clearTimeout(timer);
     }
   }, [user, loading, initialized, isPublicPage, router, pathname]);
 
