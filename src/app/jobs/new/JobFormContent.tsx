@@ -30,20 +30,45 @@ export default function JobFormContent({ initialClients, initialTechs }: Props) 
   async function submit(e: FormEvent) {
     e.preventDefault()
 
-    await jobOperations.create({
-      client_id: Number(clientId),
-      title:       desc.slice(0, 50),
-      description: desc,
-      status:      'pending',
-      start_date:  new Date(start).toISOString(),
-      end_date:    new Date(start).toISOString(),
-      budget,
-      priority:    priority.toLowerCase() as 'low' | 'medium' | 'high',
-      assigned_technicians: techs,
-      service_address: address,
-    } as any)
+    try {
+      // Create the job in database first
+      const newJob = await jobOperations.create({
+        client_id: Number(clientId),
+        title:       desc.slice(0, 50),
+        description: desc,
+        status:      'pending',
+        start_date:  new Date(start).toISOString(),
+        end_date:    new Date(start).toISOString(),
+        budget,
+        priority:    priority.toLowerCase() as 'low' | 'medium' | 'high',
+        assigned_technicians: techs,
+        service_address: address,
+      } as any)
 
-    router.push('/jobs')
+      // Create Google Calendar event
+      if (start) {
+        const clientName = initialClients.find(c => c.id === Number(clientId))?.name || 'Unknown Client';
+        try {
+          await fetch('/api/schedule-job', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              title: desc.slice(0, 50),
+              description: `${desc}\n\nClient: ${clientName}\nLocation: ${address}`,
+              start: new Date(start).toISOString(),
+            }),
+          });
+        } catch (calError) {
+          console.error('Failed to create calendar event:', calError);
+          // Don't prevent job creation if calendar fails
+        }
+      }
+
+      router.push('/jobs')
+    } catch (error) {
+      console.error('Error creating job:', error);
+      // Handle error appropriately - maybe show an error message to user
+    }
   }
 
   /* ------- UI -------------------------------------------------------- */

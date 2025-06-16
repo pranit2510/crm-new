@@ -40,26 +40,26 @@ export default function LeadsTable({ leads, onDelete, onStatusChange }: Props) {
   }
 
   return (
-    <div className="bg-white shadow rounded-lg overflow-x-auto">
+    <div className="bg-white shadow rounded-lg overflow-x-auto overflow-y-visible">
       <table className="min-w-full divide-y divide-gray-200">
         <thead className="bg-gray-50">
           <tr>
-            <th className="px-4 py-2 text-left">Name</th>
-            <th className="px-4 py-2 text-left">Contact</th>
-            <th className="px-4 py-2 text-left">Status</th>
-            <th className="px-4 py-2 text-left">Est. Value</th>
-            <th className="px-4 py-2 text-left">Actions</th>
+            <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
+            <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Contact</th>
+            <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+            <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Est. Value</th>
+            <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
           </tr>
         </thead>
         <tbody className="divide-y divide-gray-200">
           {leads.map(l => (
             <tr key={l.id} className="hover:bg-gray-50">
-              <td className="px-4 py-2 font-medium">{l.name}</td>
-              <td className="px-4 py-2">
+              <td className="px-4 py-4 font-medium">{l.name}</td>
+              <td className="px-4 py-4">
                 <div>{l.email}</div>
                 <div className="text-xs text-gray-500">{l.phone}</div>
               </td>
-              <td className="px-4 py-2">
+              <td className="px-4 py-4 relative">
                 <StatusDropdownLead
                   id={l.id}
                   current={l.status}
@@ -67,10 +67,10 @@ export default function LeadsTable({ leads, onDelete, onStatusChange }: Props) {
                   onChange={(s) => changeStatus(l.id, s)}
                 />
               </td>
-              <td className="px-4 py-2">
+              <td className="px-4 py-4">
                 ${l.estimated_value?.toLocaleString() ?? 0}
               </td>
-              <td className="px-4 py-2 whitespace-nowrap">
+              <td className="px-4 py-4 whitespace-nowrap">
                 <Link href={`/leads/${l.id}/edit`} className="text-yellow-600 mr-3">
                   <Edit3 size={16} />
                 </Link>

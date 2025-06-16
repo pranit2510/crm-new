@@ -27,31 +27,31 @@ export default function ClientsTable({ clients, onDelete, onStatusChange }: Prop
 
   /* render -------------------------------------------------------------- */
   return (
-    <div className="overflow-x-auto bg-white rounded-lg shadow">
+    <div className="overflow-x-auto bg-white rounded-lg shadow" style={{ overflow: 'visible' }}>
       <table className="min-w-full divide-y divide-gray-200">
         <thead className="bg-gray-50">
           <tr>
-            <th className="px-4 py-2 text-left">Client</th>
-            <th className="px-4 py-2 text-left">Contact</th>
-            <th className="px-4 py-2 text-left">Status</th>
-            <th className="px-4 py-2 text-left">Metrics</th>
-            <th className="px-4 py-2 text-left">Actions</th>
+            <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Client</th>
+            <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Contact</th>
+            <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+            <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Metrics</th>
+            <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
           </tr>
         </thead>
         <tbody className="divide-y divide-gray-200">
           {clients.map(c => (
             <tr key={c.id} className="hover:bg-gray-50">
-              <td className="px-4 py-2 font-medium">
+              <td className="px-4 py-4 font-medium">
                 <Link href={`/clients/${c.id}`} className="hover:underline">{c.name}</Link>
                 <div className="text-xs text-gray-400">Added {new Date(c.created_at).toLocaleDateString()}</div>
               </td>
 
-              <td className="px-4 py-2">
+              <td className="px-4 py-4">
                 <div>{c.email ?? '—'}</div>
                 <div className="text-xs text-gray-500">{c.phone}</div>
               </td>
 
-              <td className="px-4 py-2">
+              <td className="px-4 py-4 relative">
                 <StatusDropdown
                   id={c.id}
                   current={c.flowStatus}
@@ -60,7 +60,7 @@ export default function ClientsTable({ clients, onDelete, onStatusChange }: Prop
                 {c.source && <div className="text-xs text-gray-500 mt-1">Source: {c.source}</div>}
               </td>
 
-              <td className="px-4 py-2 text-sm text-gray-600">
+              <td className="px-4 py-4 text-sm text-gray-600">
                 <div className="flex items-center gap-2">
                   <DollarSign size={14}/> ${c.totalRevenue.toLocaleString()}
                   <Calendar size={14} className="ml-2" /> {c.totalJobs} jobs
@@ -72,7 +72,7 @@ export default function ClientsTable({ clients, onDelete, onStatusChange }: Prop
                 )}
               </td>
 
-              <td className="px-4 py-2 whitespace-nowrap">
+              <td className="px-4 py-4 whitespace-nowrap">
                 <Link
                   href={`/quotes/new?clientId=${c.id}`}
                   className="text-blue-600 hover:underline mr-4 inline-flex items-center text-xs font-semibold border border-blue-200 bg-blue-50 px-2 py-1 rounded"

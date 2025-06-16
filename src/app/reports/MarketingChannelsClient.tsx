@@ -178,19 +178,19 @@ export default function MarketingChannelsClient ({
         {/* table */}
         <div className="overflow-x-auto">
           <table className="min-w-full divide-y divide-gray-200 text-sm">
-          <thead className="bg-gray-50">
-      <tr>                                                   {/* ✅ add */}
-        {['Channel','Cost','Leads','Jobs','Revenue',
-          'Close %','CPL','ROI','Actions'].map(h => (
-          <th
-            key={h}
-            className="px-4 py-3 text-left text-xs uppercase text-gray-500"
-          >
-            {h}
-          </th>
-        ))}
-      </tr>                                                  {/* ✅ add */}
-    </thead>
+            <thead className="bg-gray-50">
+              <tr>
+                {['Channel','Cost','Leads','Jobs','Revenue',
+                  'Close %','CPL','ROI','Actions'].map(h => (
+                  <th
+                    key={h}
+                    className="px-4 py-3 text-left text-xs uppercase text-gray-500"
+                  >
+                    {h}
+                  </th>
+                ))}
+              </tr>
+            </thead>
             <tbody className="divide-y divide-gray-100">
 
               {/* rows */}

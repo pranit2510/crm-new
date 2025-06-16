@@ -28,7 +28,12 @@ export default function ProfilePage() {
           .eq("id", user.id)
           .maybeSingle();
         if (data) {
-          setProfile(data);
+          setProfile({
+            name: data.name ?? "",
+            email: data.email ?? "",
+            phone: data.phone ?? "",
+            role: data.role ?? "",
+          });
         } else {
           setProfile({ ...initialProfile, email: user.email ?? "" });
         }

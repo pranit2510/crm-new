@@ -39,11 +39,14 @@ export default function Calendar() {
 
     try {
       setLoading(true)
+      
+      // Update job dates in database and create calendar event
       await calendarService.scheduleJob(
         selectedJob.id,
         new Date(startDate),
         new Date(endDate)
       )
+      
       await loadData() // Reload data after scheduling
       setSelectedJob(null)
       setStartDate('')

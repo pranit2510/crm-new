@@ -23,8 +23,6 @@ export const calendarService = {
     if (jobError) throw new Error(`Error fetching job details: ${jobError.message}`)
 
     // Create calendar event
-    // Note: This is a placeholder. You'll need to integrate with a calendar service
-    // like Google Calendar, Outlook, etc.
     const calendarEvent = {
       title: job.title,
       description: job.description,
@@ -34,8 +32,28 @@ export const calendarService = {
       location: job.clients.address
     }
 
-    // TODO: Implement actual calendar service integration
-    console.log('Calendar event created:', calendarEvent)
+    // Create Google Calendar event
+    try {
+      const response = await fetch('/api/schedule-job', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          title: job.title,
+          description: `${job.description}\n\nClient: ${job.clients.name}\nLocation: ${job.clients.address || job.service_address}`,
+          start: startDate.toISOString(),
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`Calendar API error: ${response.status}`);
+      }
+
+      const result = await response.json();
+      console.log('Google Calendar event created:', result);
+    } catch (error) {
+      console.error('Failed to create Google Calendar event:', error);
+      // Don't throw error here to avoid breaking the job scheduling
+    }
 
     return calendarEvent
   },
