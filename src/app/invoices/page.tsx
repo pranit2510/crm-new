@@ -1,15 +1,14 @@
 /* ------------------------------------------------------------------ */
 /*  /invoices – server component (SSR)                                */
 /* ------------------------------------------------------------------ */
-import { cookies } from 'next/headers'
-import { createServerComponentClient } from '@supabase/auth-helpers-nextjs'
+import { createClient } from '@/lib/supabase-server'
 import InvoicesPageContent from './InvoicesPageContent'
 // import type { Database } from '@/lib/supabase'            // ← keep if you generated types
 
 export const revalidate = 0          // pure SSR (set a number >0 for ISR)
 
 export default async function InvoicesPage() {
-  const supabase = createServerComponentClient/*<Database>*/({ cookies })
+  const supabase = await createClient()
 
   /* 1 ▸ fetch invoices + joined client + job + quote in one roundtrip */
   const { data: invoices = [] } = await supabase

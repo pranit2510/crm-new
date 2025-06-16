@@ -1,8 +1,7 @@
 /* ------------------------------------------------------------------ */
 /*  /quotes – 100 % SSR, no client-side data fetch                    */
 /* ------------------------------------------------------------------ */
-import { cookies } from 'next/headers'
-import { createServerComponentClient } from '@supabase/auth-helpers-nextjs'
+import { createClient } from '@/lib/supabase-server'
 import QuotesPageContent from '@/components/QuotesPageContent'
 
 // import type { Database } from '@/lib/supabase'     // keep if you generated types
@@ -11,7 +10,7 @@ export const revalidate = 0                // pure SSR (set >0 for ISR)
 
 export default async function QuotesPage() {
   /* if you generated types add <Database> here */
-  const supabase = createServerComponentClient({ cookies })
+  const supabase = await createClient()
 
   /* ---------- fetch everything needed in parallel -------------------- */
   const [quotesRes, clientsRes, invoicesRes] = await Promise.all([

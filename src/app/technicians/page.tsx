@@ -1,8 +1,7 @@
 /* ------------------------------------------------------------------ */
 /*  /technicians – server rendered                                    */
 /* ------------------------------------------------------------------ */
-import { cookies } from 'next/headers'
-import { createServerComponentClient } from '@supabase/auth-helpers-nextjs'
+import { createClient } from '@/lib/supabase-server'
 import Link from 'next/link'     
 import TechniciansTable from './TechniciansTable'
 
@@ -10,7 +9,7 @@ import TechniciansTable from './TechniciansTable'
 export const revalidate = 0
 
 export default async function TechniciansPage() {
-  const supabase = createServerComponentClient({ cookies })
+  const supabase = await createClient()
 
   const { data: technicians = [] } = await supabase
     .from('technicians')
