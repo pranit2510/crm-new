@@ -35,6 +35,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   useEffect(() => {
     let mounted = true;
+    let authTimeout: NodeJS.Timeout;
 
     // Check for existing session
     const initAuth = async () => {
@@ -51,6 +52,19 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         }
       } catch (error) {
         console.error('Error initializing auth:', error);
+        
+        // If auth initialization fails, it might be due to stale data
+        // Clear it automatically to prevent loops
+        if (error && typeof window !== 'undefined') {
+          console.log('AuthContext: Clearing potentially stale auth data...');
+          Object.keys(localStorage).forEach(key => {
+            if (key.startsWith('sb-')) {
+              localStorage.removeItem(key);
+            }
+          });
+          localStorage.removeItem('user_role');
+        }
+        
         if (mounted) {
           setUser(null);
           setLoading(false);
@@ -59,12 +73,31 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       }
     };
 
+    // Set a timeout to detect stale auth data
+    authTimeout = setTimeout(() => {
+      if (mounted && !initialized) {
+        console.log('AuthContext: Auth initialization timeout - clearing stale data');
+        if (typeof window !== 'undefined') {
+          Object.keys(localStorage).forEach(key => {
+            if (key.startsWith('sb-')) {
+              localStorage.removeItem(key);
+            }
+          });
+          localStorage.removeItem('user_role');
+        }
+        setUser(null);
+        setLoading(false);
+        setInitialized(true);
+      }
+    }, 5000); // 5 second timeout
+
     initAuth();
 
     // Listen for auth state changes
     const { data: { subscription } } = authService.onAuthStateChange((user) => {
       console.log('AuthContext: Auth state changed:', user);
       if (mounted) {
+        clearTimeout(authTimeout);
         setUser(user);
         setLoading(false);
         setInitialized(true);
@@ -73,6 +106,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
     return () => {
       mounted = false;
+      clearTimeout(authTimeout);
       subscription?.unsubscribe();
     };
   }, []);
