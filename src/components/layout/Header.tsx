@@ -14,9 +14,10 @@ import {
   X,
 } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
+import { useAuth } from '@/contexts/AuthContext';
 
 const Header = () => {
-  const [user, setUser] = useState<any>(null);
+  const { user, logout } = useAuth();
   const [isLoggingOut, setIsLoggingOut] = useState(false);
   const [userDropdownOpen, setUserDropdownOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
@@ -25,13 +26,7 @@ const Header = () => {
   const dropdownRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
 
-  useEffect(() => {
-    const getUser = async () => {
-      const { data } = await supabase.auth.getUser();
-      setUser(data.user);
-    };
-    getUser();
-  }, []);
+  // User is now provided by AuthContext, no need for local state
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -70,11 +65,11 @@ const Header = () => {
     setIsLoggingOut(true);
     setUserDropdownOpen(false);
     try {
-      await supabase.auth.signOut();
-      document.body.classList.add('fade-out');
+      await logout();
+      // Add a small delay for better UX, then redirect
       setTimeout(() => {
         router.push('/login');
-      }, 300);
+      }, 100);
     } catch (error) {
       console.error('Logout error:', error);
       setIsLoggingOut(false);

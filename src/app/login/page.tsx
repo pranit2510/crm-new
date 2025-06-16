@@ -6,7 +6,6 @@ import Link from 'next/link';
 import { Eye, EyeOff, Zap, LogIn, AlertCircle } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 import { useAuth } from '@/contexts/AuthContext';
-import { AuthDebug } from '@/components/debug/AuthDebug';
 
 const LoginPage = () => {
   const [credentials, setCredentials] = useState({
@@ -221,7 +220,6 @@ const LoginPage = () => {
           <p>&copy; 2024 VoltFlow CRM. All rights reserved.</p>
         </div>
       </div>
-      <AuthDebug />
     </div>
   );
 };
