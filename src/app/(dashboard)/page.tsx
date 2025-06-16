@@ -1,5 +1,4 @@
-import { cookies } from 'next/headers'
-import { createServerComponentClient } from '@supabase/auth-helpers-nextjs'
+import { createClient } from '@/lib/supabase-server'
 import DashboardClient from './DashboardClient'
 import defaultLayout   from './defaultLayout'
 
@@ -14,7 +13,7 @@ export interface DashboardStats {
 }
 
 export default async function DashboardPage() {
-  const supabase = createServerComponentClient({ cookies })
+  const supabase = await createClient()
 
   /* parallel, lean queries */
   const [

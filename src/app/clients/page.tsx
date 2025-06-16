@@ -1,5 +1,4 @@
-import { cookies } from 'next/headers'
-import { createServerComponentClient } from '@supabase/auth-helpers-nextjs'
+import { createClient } from '@/lib/supabase-server'
 
 
 import ClientsTable, {
@@ -12,12 +11,7 @@ export const revalidate = 0     // set >0 for ISR if you like
 
 export default async function ClientsPage() {
 
-  const cookieStore = cookies()
-
-  /* 2. hand a callback to Supabase helper */
-  const supabase = createServerComponentClient({
-    cookies: () => cookieStore,   // ✅ no warning
-  })
+  const supabase = await createClient()
 
 
   /* -- fetch three tables in parallel ----------------------------------- */
