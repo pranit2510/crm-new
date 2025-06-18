@@ -1,201 +1,336 @@
 import { createBrowserClient } from '@supabase/ssr'
+import type { Client, Job, Lead, Quote, Invoice } from './supabase-types'
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-
-export const supabase = createBrowserClient(supabaseUrl, supabaseAnonKey)
-
-// Database Types
-export type Client = {
-  id: number
-  created_at: string
-  name: string
-  email: string
-  phone: string
-  notes: string
-  address: string
-  status: 'active' | 'inactive'
-  estimated_value: number
-  source: string
-  assigned_to: string
+export function createClient() {
+  return createBrowserClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    {
+      cookies: {
+        // Add better cookie handling for auth persistence
+        get(name: string) {
+          if (typeof window === 'undefined') return undefined;
+          const cookies = document.cookie.split('; ');
+          const cookie = cookies.find(c => c.startsWith(`${name}=`));
+          return cookie?.split('=')[1];
+        },
+        set(name: string, value: string, options?: any) {
+          if (typeof window === 'undefined') return;
+          let cookieString = `${name}=${value}`;
+          if (options?.maxAge) {
+            cookieString += `; max-age=${options.maxAge}`;
+          }
+          if (options?.path) {
+            cookieString += `; path=${options.path}`;
+          }
+          document.cookie = cookieString;
+        },
+        remove(name: string, options?: any) {
+          if (typeof window === 'undefined') return;
+          document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=${options?.path || '/'}`;
+        }
+      },
+      auth: {
+        detectSessionInUrl: true,
+        persistSession: true,
+        autoRefreshToken: true,
+        // Add storage key prefix to avoid conflicts
+        storageKey: 'voltflow-auth',
+      }
+    }
+  )
 }
 
-export type Job = {
-  id: number
-  created_at: string
-  title: string
-  description: string
-  status: 'pending' | 'in_progress' | 'completed' | 'cancelled'
-  client_id: number
-  start_date: string
-  end_date: string
-  budget: number
-  priority: 'low' | 'medium' | 'high'
-  assigned_technicians?: string[]
-  serviceAddress?: string
+// Export a singleton instance for use throughout the app
+export const supabase = createClient()
+
+// Add a helper to check and refresh session
+export async function getSession() {
+  const { data: { session }, error } = await supabase.auth.getSession();
+  
+  if (error || !session) {
+    // Try to refresh
+    const { data: { session: refreshedSession } } = await supabase.auth.refreshSession();
+    return refreshedSession;
+  }
+  
+  return session;
 }
 
-export type Lead = {
-  id: number
-  created_at: string
-  name: string
-  email: string
-  phone: string
-  source: string
-  status: 'new' | 'contacted' | 'qualified' | 'lost'
-  notes: string
-  estimated_value: number
+// Client operations
+export const clientOperations = {
+  async create(client: Omit<Client, 'id' | 'created_at'>) {
+    const { data, error } = await supabase
+      .from('clients')
+      .insert([client])
+      .select()
+      .single()
+    
+    if (error) {
+      console.error('Supabase error:', error);
+      throw new Error(`Error creating client: ${error.message}`);
+    }
+    return data
+  },
+
+  async getAll() {
+    const { data, error } = await supabase
+      .from('clients')
+      .select('*')
+      .order('created_at', { ascending: false })
+    
+    if (error) throw error
+    return data
+  },
+
+  async getById(id: number) {
+    const { data, error } = await supabase
+      .from('clients')
+      .select('*')
+      .eq('id', id)
+      .single()
+    
+    if (error) throw error
+    return data
+  },
+
+  async update(id: number, updates: Partial<Client>) {
+    const { data, error } = await supabase
+      .from('clients')
+      .update(updates)
+      .eq('id', id)
+      .select()
+      .single()
+    
+    if (error) throw error
+    return data
+  },
+
+  async delete(id: number) {
+    const { error } = await supabase
+      .from('clients')
+      .delete()
+      .eq('id', id)
+    
+    if (error) throw error
+  }
 }
 
-export type Quote = {
-  id: number
-  created_at: string
-  client_id: number
-  job_id: number | null
-  amount: number
-  status: 'draft' | 'sent' | 'accepted' | 'rejected'
-  valid_until: string
-  terms: string
-  notes: string
+// Job operations
+export const jobOperations = {
+  async create(job: Omit<Job, 'id' | 'created_at'>) {
+    const { data, error } = await supabase
+      .from('jobs')
+      .insert([job])
+      .select()
+      .single()
+    
+    if (error) throw error
+    return data
+  },
+
+  async getAll() {
+    const { data, error } = await supabase
+      .from('jobs')
+      .select('*, clients(*)')
+      .order('created_at', { ascending: false })
+    
+    if (error) throw error
+    return data
+  },
+
+  async getByClientId(clientId: number) {
+    const { data, error } = await supabase
+      .from('jobs')
+      .select('*')
+      .eq('client_id', clientId)
+      .order('created_at', { ascending: false })
+    
+    if (error) throw error
+    return data
+  },
+
+  async delete(id: number) {
+    const { error } = await supabase
+      .from('jobs')
+      .delete()
+      .eq('id', id);
+    if (error) throw error;
+  },
+
+  async update(id: number, data: Partial<Job>) {
+    const { data: updatedJob, error } = await supabase
+      .from('jobs')
+      .update(data)
+      .eq('id', id)
+      .select()
+      .single();
+    if (error) throw error;
+    return updatedJob;
+  }
 }
 
-export type Invoice = {
-  id: number
-  created_at: string
-  client_id: number
-  job_id: number
-  quote_id: number
-  amount: number
-  status: 'draft' | 'sent' | 'paid' | 'overdue'
-  due_date: string
-  payment_terms: string
-  notes: string
+// Lead operations
+export const leadOperations = {
+  async create(lead: Omit<Lead, 'id' | 'created_at'>) {
+    const { data, error } = await supabase
+      .from('leads')
+      .insert([lead])
+      .select()
+      .single()
+    
+    if (error) throw error
+    return data
+  },
+
+  async getAll() {
+    const { data, error } = await supabase
+      .from('leads')
+      .select('*')
+      .order('created_at', { ascending: false })
+    
+    if (error) throw error
+    return data
+  },
+
+  async update(id: number, updates: Partial<Lead>) {
+    const { data, error } = await supabase
+      .from('leads')
+      .update(updates)
+      .eq('id', id)
+      .select()
+      .single()
+    
+    if (error) throw error
+    return data
+  },
+
+  async delete(id: number) {
+    const { error } = await supabase
+      .from('leads')
+      .delete()
+      .eq('id', id)
+    if (error) throw error
+  },
+
+  async getById(id: number) {
+    const { data, error } = await supabase
+      .from('leads')
+      .select('*')
+      .eq('id', id)
+      .single();
+    if (error) throw error;
+    return data;
+  }
 }
 
-export type UserProfile = {
-  id: string
-  created_at: string
-  name: string
-  email: string
-  role: 'Admin' | 'Technician' | 'Manager'
-  avatar_url?: string
-  phone?: string
+// Quote operations
+export const quoteOperations = {
+  async create(quote: Omit<Quote, 'id' | 'created_at'>) {
+    const { data, error } = await supabase
+      .from('quotes')
+      .insert([quote])
+      .select()
+      .single()
+    
+    if (error) throw error
+    return data
+  },
+
+  async getByClientId(clientId: number) {
+    const { data, error } = await supabase
+      .from('quotes')
+      .select('*, clients(*)')
+      .eq('client_id', clientId)
+      .order('created_at', { ascending: false })
+    
+    if (error) throw error
+    return data
+  },
+
+  async getAll() {
+    const { data, error } = await supabase
+      .from('quotes')
+      .select('*, clients(*)')
+      .order('created_at', { ascending: false })
+    
+    if (error) throw error
+    return data
+  },
+
+  async delete(id: number) {
+    const { error } = await supabase
+      .from('quotes')
+      .delete()
+      .eq('id', id);
+    if (error) throw error;
+  },
+
+  async update(id: number, updates: Partial<Quote>) {
+    const { data, error } = await supabase
+      .from('quotes')
+      .update(updates)
+      .eq('id', id)
+      .select()
+      .single();
+    if (error) throw error;
+    return data;
+  },
 }
 
-// Database Schema SQL (to be run in Supabase SQL editor)
-export const schema = `
--- Enable Row Level Security
-ALTER TABLE clients ENABLE ROW LEVEL SECURITY;
-ALTER TABLE jobs ENABLE ROW LEVEL SECURITY;
-ALTER TABLE leads ENABLE ROW LEVEL SECURITY;
-ALTER TABLE quotes ENABLE ROW LEVEL SECURITY;
-ALTER TABLE invoices ENABLE ROW LEVEL SECURITY;
-ALTER TABLE user_profiles ENABLE ROW LEVEL SECURITY;
+// Invoice operations
+export const invoiceOperations = {
+  async create(invoice: Omit<Invoice, 'id' | 'created_at'>) {
+    const { data, error } = await supabase
+      .from('invoices')
+      .insert([invoice])
+      .select()
+      .single()
+    
+    if (error) throw error
+    return data
+  },
 
--- Create user profiles table (linked to auth.users)
-CREATE TABLE IF NOT EXISTS user_profiles (
-  id UUID REFERENCES auth.users(id) ON DELETE CASCADE PRIMARY KEY,
-  created_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc'::text, NOW()) NOT NULL,
-  name TEXT NOT NULL,
-  email TEXT NOT NULL,
-  role TEXT DEFAULT 'Technician' CHECK (role IN ('Admin', 'Technician', 'Manager')),
-  avatar_url TEXT,
-  phone TEXT
-);
+  async getByClientId(clientId: number) {
+    const { data, error } = await supabase
+      .from('invoices')
+      .select('*')
+      .eq('client_id', clientId)
+      .order('created_at', { ascending: false })
+    
+    if (error) throw error
+    return data
+  },
 
--- Create tables
-CREATE TABLE IF NOT EXISTS clients (
-  id BIGSERIAL PRIMARY KEY,
-  created_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc'::text, NOW()) NOT NULL,
-  name TEXT NOT NULL,
-  email TEXT,
-  phone TEXT,
-  company TEXT,
-  notes TEXT,
-  address TEXT,
-  status TEXT DEFAULT 'active' CHECK (status IN ('active', 'inactive')),
-  lead_id BIGINT REFERENCES leads(id) ON DELETE SET NULL
-);
+  async getAll() {
+    const { data, error } = await supabase
+      .from('invoices')
+      .select('*, clients(*), jobs(*)')
+      .order('created_at', { ascending: false })
+    
+    if (error) throw error
+    return data
+  },
 
-CREATE TABLE IF NOT EXISTS jobs (
-  id BIGSERIAL PRIMARY KEY,
-  created_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc'::text, NOW()) NOT NULL,
-  title TEXT NOT NULL,
-  description TEXT,
-  status TEXT DEFAULT 'pending' CHECK (status IN ('pending', 'in_progress', 'completed', 'cancelled')),
-  client_id BIGINT REFERENCES clients(id) ON DELETE CASCADE,
-  start_date TIMESTAMP WITH TIME ZONE,
-  end_date TIMESTAMP WITH TIME ZONE,
-  budget DECIMAL(10,2),
-  priority TEXT DEFAULT 'medium' CHECK (priority IN ('low', 'medium', 'high')),
-  assigned_technicians TEXT[]
-);
+  async update(id: number, updates: Partial<Invoice>) {
+    const { data, error } = await supabase
+      .from('invoices')
+      .update(updates)
+      .eq('id', id)
+      .select()
+      .single();
+    if (error) throw error;
+    return data;
+  },
 
-CREATE TABLE IF NOT EXISTS leads (
-  id BIGSERIAL PRIMARY KEY,
-  created_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc'::text, NOW()) NOT NULL,
-  name TEXT NOT NULL,
-  email TEXT,
-  phone TEXT,
-  source TEXT,
-  status TEXT DEFAULT 'new' CHECK (status IN ('new', 'contacted', 'qualified', 'lost')),
-  notes TEXT,
-  assigned_to TEXT
-);
+  async delete(id: number) {
+    const { error } = await supabase
+      .from('invoices')
+      .delete()
+      .eq('id', id)
 
-CREATE TABLE IF NOT EXISTS quotes (
-  id BIGSERIAL PRIMARY KEY,
-  created_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc'::text, NOW()) NOT NULL,
-  client_id BIGINT REFERENCES clients(id) ON DELETE CASCADE,
-  job_id BIGINT REFERENCES jobs(id) ON DELETE SET NULL,
-  amount DECIMAL(10,2) NOT NULL,
-  status TEXT DEFAULT 'draft' CHECK (status IN ('draft', 'sent', 'accepted', 'rejected')),
-  valid_until TIMESTAMP WITH TIME ZONE,
-  terms TEXT,
-  notes TEXT
-);
+    if (error) throw error
+  },
+}
 
-CREATE TABLE IF NOT EXISTS invoices (
-  id BIGSERIAL PRIMARY KEY,
-  created_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc'::text, NOW()) NOT NULL,
-  client_id BIGINT REFERENCES clients(id) ON DELETE CASCADE,
-  job_id BIGINT REFERENCES jobs(id) ON DELETE SET NULL,
-  quote_id BIGINT REFERENCES quotes(id) ON DELETE SET NULL,
-  amount DECIMAL(10,2) NOT NULL,
-  status TEXT DEFAULT 'draft' CHECK (status IN ('draft', 'sent', 'paid', 'overdue')),
-  due_date TIMESTAMP WITH TIME ZONE,
-  payment_terms TEXT,
-  notes TEXT
-);
-
--- Create indexes for better query performance
-CREATE INDEX IF NOT EXISTS idx_jobs_client_id ON jobs(client_id);
-CREATE INDEX IF NOT EXISTS idx_quotes_client_id ON quotes(client_id);
-CREATE INDEX IF NOT EXISTS idx_quotes_job_id ON quotes(job_id);
-CREATE INDEX IF NOT EXISTS idx_invoices_client_id ON invoices(client_id);
-CREATE INDEX IF NOT EXISTS idx_invoices_job_id ON invoices(job_id);
-CREATE INDEX IF NOT EXISTS idx_invoices_quote_id ON invoices(quote_id);
-CREATE INDEX IF NOT EXISTS idx_user_profiles_email ON user_profiles(email);
-
--- Row Level Security Policies
--- Users can only view and update their own profile
-CREATE POLICY "Users can view own profile" ON user_profiles FOR SELECT USING (auth.uid() = id);
-CREATE POLICY "Users can update own profile" ON user_profiles FOR UPDATE USING (auth.uid() = id);
-CREATE POLICY "Users can insert own profile" ON user_profiles FOR INSERT WITH CHECK (auth.uid() = id);
-
--- Basic policies for other tables (adjust based on your business logic)
-CREATE POLICY "Authenticated users can view clients" ON clients FOR SELECT USING (auth.role() = 'authenticated');
-CREATE POLICY "Authenticated users can manage clients" ON clients FOR ALL USING (auth.role() = 'authenticated');
-
-CREATE POLICY "Authenticated users can view jobs" ON jobs FOR SELECT USING (auth.role() = 'authenticated');
-CREATE POLICY "Authenticated users can manage jobs" ON jobs FOR ALL USING (auth.role() = 'authenticated');
-
-CREATE POLICY "Authenticated users can view leads" ON leads FOR SELECT USING (auth.role() = 'authenticated');
-CREATE POLICY "Authenticated users can manage leads" ON leads FOR ALL USING (auth.role() = 'authenticated');
-
-CREATE POLICY "Authenticated users can view quotes" ON quotes FOR SELECT USING (auth.role() = 'authenticated');
-CREATE POLICY "Authenticated users can manage quotes" ON quotes FOR ALL USING (auth.role() = 'authenticated');
-
-CREATE POLICY "Authenticated users can view invoices" ON invoices FOR SELECT USING (auth.role() = 'authenticated');
-CREATE POLICY "Authenticated users can manage invoices" ON invoices FOR ALL USING (auth.role() = 'authenticated');
-` 
+// Add remaining operations here (technician, channel reports, etc.)...

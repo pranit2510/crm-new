@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import { quoteConversionOperations } from '@/lib/quote-conversion'
 import { quoteOperations } from '@/lib/supabase-client'
-import type { Quote } from '@/lib/supabase'
+import type { Quote } from '@/lib/supabase-types'
 
 export default function QuoteConversion() {
   const [quotes, setQuotes] = useState<Quote[]>([])

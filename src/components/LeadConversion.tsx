@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import { leadConversionOperations } from '@/lib/lead-conversion'
 import { leadOperations } from '@/lib/supabase-client'
-import type { Lead } from '@/lib/supabase'
+import type { Lead } from '@/lib/supabase-types'
 import AddLeadForm from './AddLeadForm'
 
 export default function LeadConversion() {

@@ -5,7 +5,7 @@ import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { Save, ArrowLeft } from 'lucide-react'
 import { quoteOperations } from '@/lib/supabase-client'
-import type { Quote } from '@/lib/supabase'
+import type { Quote } from '@/lib/supabase-types'
 
 export default function EditQuotePage () {
   const router      = useRouter()

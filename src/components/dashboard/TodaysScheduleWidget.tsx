@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { Calendar, Clock, MapPin, User } from 'lucide-react';
 import { jobOperations } from '@/lib/supabase-client';
-import type { Job } from '@/lib/supabase';
+import type { Job } from '@/lib/supabase-types';
 
 interface TodaysJob extends Job {
   client_name?: string;

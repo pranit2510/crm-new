@@ -9,7 +9,7 @@ import {
 } from 'lucide-react'
 import StatusDropdownLead from '@/components/StatusDropdownLead'     // implement similar to client one
 import { leadOperations } from '@/lib/supabase-client'
-import type { Lead } from '@/lib/supabase'
+import type { Lead } from '@/lib/supabase-types'
 import Link from 'next/link'
 import { useState } from 'react'
 import { leadConversionOperations } from '@/lib/lead-conversion'

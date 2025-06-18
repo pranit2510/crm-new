@@ -1,6 +1,6 @@
 'use client';
 
-import React, { createContext, useContext, useEffect, useState } from 'react';
+import React, { createContext, useContext, useEffect, useState, useCallback } from 'react';
 import { authService } from '@/lib/auth';
 import type { AuthUser } from '@/lib/auth';
 
@@ -8,9 +8,11 @@ interface AuthContextType {
   user: AuthUser | null;
   loading: boolean;
   initialized: boolean;
+  error: string | null;
   login: (email: string, password: string) => Promise<{ success: boolean; error?: string }>;
   logout: () => Promise<void>;
   clearAuthData: () => Promise<void>;
+  refreshAuth: () => Promise<void>;
   isAuthenticated: boolean;
 }
 
@@ -32,90 +34,126 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [user, setUser] = useState<AuthUser | null>(null);
   const [loading, setLoading] = useState(true);
   const [initialized, setInitialized] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const clearAuthData = useCallback(async () => {
+    try {
+      await authService.logout();
+      setUser(null);
+      setError(null);
+      console.log('Auth data cleared successfully');
+    } catch (error) {
+      console.error('Error clearing auth data:', error);
+      // Force clear even if logout fails
+      setUser(null);
+      setError(null);
+    }
+  }, []);
+
+  const refreshAuth = useCallback(async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      
+      // Try to refresh the session first
+      await authService.refreshSession();
+      
+      // Then get the current user
+      const currentUser = await authService.getCurrentUser();
+      setUser(currentUser);
+      
+      console.log('Auth refreshed successfully:', currentUser);
+    } catch (error) {
+      console.error('Error refreshing auth:', error);
+      setError('Failed to refresh authentication');
+      setUser(null);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
 
   useEffect(() => {
     let mounted = true;
-    let authTimeout: NodeJS.Timeout;
+    let initTimeout: NodeJS.Timeout;
+    let unsubscribe: (() => void) | undefined;
 
-    // Check for existing session
     const initAuth = async () => {
       try {
-        console.log('AuthContext: Initializing auth...');
-        const currentUser = await authService.getCurrentUser();
-        console.log('AuthContext: Current user:', currentUser);
+        console.log('AuthContext: Starting initialization...');
+        setError(null);
         
-        if (mounted) {
-          setUser(currentUser);
-          setLoading(false);
-          setInitialized(true);
-          console.log('AuthContext: Initialization complete');
-        }
-      } catch (error) {
-        console.error('Error initializing auth:', error);
-        
-        // If auth initialization fails, it might be due to stale data
-        // Clear it automatically to prevent loops
-        if (error && typeof window !== 'undefined') {
-          console.log('AuthContext: Clearing potentially stale auth data...');
-          Object.keys(localStorage).forEach(key => {
-            if (key.startsWith('sb-')) {
-              localStorage.removeItem(key);
-            }
-          });
-          localStorage.removeItem('user_role');
-        }
-        
-        if (mounted) {
-          setUser(null);
-          setLoading(false);
-          setInitialized(true);
-        }
-      }
-    };
+        // Set a reasonable timeout for auth initialization
+        initTimeout = setTimeout(() => {
+          if (mounted && !initialized) {
+            console.warn('Auth initialization timeout - assuming logged out');
+            setUser(null);
+            setLoading(false);
+            setInitialized(true);
+            setError('Authentication timeout');
+          }
+        }, 3000); // 3 second timeout
 
-    // Set a timeout to detect stale auth data
-    authTimeout = setTimeout(() => {
-      if (mounted && !initialized) {
-        console.log('AuthContext: Auth initialization timeout - clearing stale data');
-        if (typeof window !== 'undefined') {
-          Object.keys(localStorage).forEach(key => {
-            if (key.startsWith('sb-')) {
-              localStorage.removeItem(key);
-            }
-          });
-          localStorage.removeItem('user_role');
+        // Get current user
+        const currentUser = await authService.getCurrentUser();
+        
+        if (!mounted) return;
+        
+        clearTimeout(initTimeout);
+        
+        console.log('AuthContext: Initial user:', currentUser);
+        setUser(currentUser);
+        setLoading(false);
+        setInitialized(true);
+        
+        // Set up auth state listener
+        const authSubscription = authService.onAuthStateChange((user) => {
+          if (mounted) {
+            console.log('AuthContext: Auth state changed:', user);
+            setUser(user);
+            setError(null);
+          }
+        });
+        
+        // Extract the unsubscribe function
+        unsubscribe = authSubscription.data?.subscription?.unsubscribe;
+        
+      } catch (error) {
+        console.error('Auth initialization error:', error);
+        
+        if (!mounted) return;
+        
+        clearTimeout(initTimeout);
+        
+        // Clear potentially corrupted auth data
+        try {
+          await clearAuthData();
+        } catch (clearError) {
+          console.error('Failed to clear auth data:', clearError);
         }
+        
         setUser(null);
         setLoading(false);
         setInitialized(true);
+        setError('Authentication initialization failed');
       }
-    }, 5000); // 5 second timeout
+    };
 
     initAuth();
 
-    // Listen for auth state changes
-    const { data: { subscription } } = authService.onAuthStateChange((user) => {
-      console.log('AuthContext: Auth state changed:', user);
-      if (mounted) {
-        clearTimeout(authTimeout);
-        setUser(user);
-        setLoading(false);
-        setInitialized(true);
-      }
-    });
-
     return () => {
       mounted = false;
-      clearTimeout(authTimeout);
-      subscription?.unsubscribe();
+      if (initTimeout) clearTimeout(initTimeout);
+      if (unsubscribe) unsubscribe();
     };
-  }, []);
+  }, []); // Remove clearAuthData from dependencies
 
   const login = async (email: string, password: string) => {
     try {
+      setError(null);
       const { user, error } = await authService.login({ email, password });
       
       if (error) {
+        setError(error.message);
         return { success: false, error: error.message };
       }
 
@@ -126,43 +164,22 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
       return { success: false, error: 'Login failed' };
     } catch (error) {
-      return { success: false, error: 'An unexpected error occurred' };
+      const errorMessage = error instanceof Error ? error.message : 'An unexpected error occurred';
+      setError(errorMessage);
+      return { success: false, error: errorMessage };
     }
   };
 
   const logout = async () => {
     try {
+      setError(null);
       await authService.logout();
       setUser(null);
     } catch (error) {
       console.error('Logout error:', error);
-    }
-  };
-
-  const clearAuthData = async () => {
-    try {
-      // Clear Supabase session
-      await authService.logout();
-      
-      // Clear local storage
-      if (typeof window !== 'undefined') {
-        Object.keys(localStorage).forEach(key => {
-          if (key.startsWith('sb-')) {
-            localStorage.removeItem(key);
-          }
-        });
-        
-        // Clear any user role data
-        localStorage.removeItem('user_role');
-      }
-      
+      // Force clear user even if logout fails
       setUser(null);
-      setLoading(false);
-      setInitialized(true);
-      
-      console.log('Auth data cleared successfully');
-    } catch (error) {
-      console.error('Error clearing auth data:', error);
+      setError('Logout failed, but session cleared');
     }
   };
 
@@ -170,9 +187,11 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     user,
     loading,
     initialized,
+    error,
     login,
     logout,
     clearAuthData,
+    refreshAuth,
     isAuthenticated: !!user,
   };
 
@@ -183,4 +202,4 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   );
 };
 
-export default AuthProvider; 
+export default AuthProvider;

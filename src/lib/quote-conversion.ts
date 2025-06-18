@@ -1,6 +1,6 @@
 import { supabase } from './supabase'
 import { invoiceOperations } from './supabase-client'
-import type { Invoice } from './supabase'
+import type { Invoice } from './supabase-types'
 
 export const quoteConversionOperations = {
   async convertQuoteToInvoice(quoteId: number): Promise<Invoice> {

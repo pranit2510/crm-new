@@ -11,7 +11,7 @@ import {
 } from 'lucide-react'
 
 import { invoiceOperations, clientOperations } from '@/lib/supabase-client'
-import type { Invoice } from '@/lib/supabase'          // generated types
+import type { Invoice } from '@/lib/supabase-types'          // generated types
 
 /* ---------------- types & helpers -------------------------- */
 type NewInvoice = Omit<Invoice, 'id' | 'created_at'>

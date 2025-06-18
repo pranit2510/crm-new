@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import { calendarService } from '@/lib/calendar-service'
 import { jobOperations } from '@/lib/supabase-client'
-import type { Job } from '@/lib/supabase'
+import type { Job } from '@/lib/supabase-types'
 
 export default function Calendar() {
   const [deadlines, setDeadlines] = useState<any>(null)

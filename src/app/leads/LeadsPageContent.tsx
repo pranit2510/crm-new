@@ -7,7 +7,7 @@ import { useMemo, useState } from 'react'
 import Link from 'next/link'
 import { PlusCircle, Search, Lightbulb } from 'lucide-react'
 import LeadsTable from '@/components/LeadsTable'
-import type { Lead } from '@/lib/supabase'
+import type { Lead } from '@/lib/supabase-types'
 import { useRoleRedirect } from '@/lib/hooks/useRoleRedirect';
 
 

@@ -1,7 +1,7 @@
 // app/leads/page.tsx
 import { createClient } from '@/lib/supabase-server'
 import LeadsPageContent from './LeadsPageContent'
-import type { Lead } from '@/lib/supabase'
+import type { Lead } from '@/lib/supabase-types'
 
 export const revalidate = 0      // pure SSR (set >0 = ISR)
 

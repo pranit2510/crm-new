@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { leadOperations } from '@/lib/supabase-client'
-import type { Lead } from '@/lib/supabase'
+import type { Lead } from '@/lib/supabase-types'
 
 export default function AddLeadForm({ onSuccess }: { onSuccess?: () => void }) {
   const [loading, setLoading] = useState(false)

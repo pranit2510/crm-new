@@ -1,5 +1,5 @@
 import { createBrowserClient } from '@supabase/ssr'
-import type { Client, Job, Lead, Quote, Invoice } from './supabase'
+import type { Client, Job, Lead, Quote, Invoice } from './supabase-types'
 
 export function createClient() {
   return createBrowserClient(

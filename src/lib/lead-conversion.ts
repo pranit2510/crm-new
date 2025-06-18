@@ -1,6 +1,6 @@
 import { supabase } from './supabase'
 import { clientOperations } from './supabase-client'
-import type { Client } from './supabase'
+import type { Client } from './supabase-types'
 
 interface Lead {
   id: number;

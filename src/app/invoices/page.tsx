@@ -3,7 +3,7 @@
 /* ------------------------------------------------------------------ */
 import { createClient } from '@/lib/supabase-server'
 import InvoicesPageContent from './InvoicesPageContent'
-// import type { Database } from '@/lib/supabase'            // ← keep if you generated types
+// import type { Database } from '@/lib/supabase-types'            // ← keep if you generated types
 
 export const revalidate = 0          // pure SSR (set a number >0 for ISR)
 
