@@ -305,7 +305,13 @@ export default function InvoicesPageContent(
                   {/* actions */}
                   <td className="px-4 py-2">
                     <div className="flex items-center gap-3">
-                      
+                      <Link
+                        href={`/invoices/${inv.id}/edit`}
+                        className="text-blue-600 hover:text-blue-700"
+                        title="Edit"
+                      >
+                        <Edit3 size={16} />
+                      </Link>
 
                       <button
                         disabled={busy === inv.id}
