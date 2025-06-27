@@ -90,31 +90,79 @@ export const authService = {
   },
 
   async logout() {
-    // Clear all auth-related data
-    if (typeof window !== 'undefined') {
-      // Clear Supabase-related items
-      Object.keys(localStorage).forEach(key => {
-        if (key.startsWith('sb-')) {
-          localStorage.removeItem(key);
-        }
-      });
-      
-      // Clear user role
-      localStorage.removeItem('user_role');
-      
-      // Clear any session storage
-      Object.keys(sessionStorage).forEach(key => {
-        if (key.startsWith('sb-')) {
-          sessionStorage.removeItem(key);
+    try {
+      // First, sign out from Supabase
+      const { error } = await supabase.auth.signOut();
+      if (error) {
+        console.error('Supabase logout error:', error);
+      }
+    } catch (error) {
+      console.error('Logout error:', error);
+    }
+
+    // Clear all auth-related data (regardless of logout success)
+    this.clearAllAuthData();
+  },
+
+  // Comprehensive auth data clearing
+  clearAllAuthData() {
+    if (typeof window === 'undefined') return;
+
+    console.log('Clearing all auth data...');
+
+    // Clear localStorage
+    Object.keys(localStorage).forEach(key => {
+      if (key.startsWith('sb-') || 
+          key === 'user_role' || 
+          key.includes('supabase') ||
+          key.includes('auth')) {
+        console.log('Removing localStorage key:', key);
+        localStorage.removeItem(key);
+      }
+    });
+    
+    // Clear sessionStorage
+    Object.keys(sessionStorage).forEach(key => {
+      if (key.startsWith('sb-') || 
+          key.includes('supabase') ||
+          key.includes('auth')) {
+        console.log('Removing sessionStorage key:', key);
+        sessionStorage.removeItem(key);
+      }
+    });
+
+    // Clear any cookies (if any)
+    if (document.cookie) {
+      document.cookie.split(";").forEach(function(c) { 
+        const cookie = c.trim();
+        if (cookie.startsWith('sb-') || cookie.includes('supabase')) {
+          document.cookie = cookie.replace(/^ +/, "").replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/");
         }
       });
     }
 
-    const { error } = await supabase.auth.signOut();
-    if (error) {
-      console.error('Logout error:', error);
-      throw error;
-    }
+    console.log('Auth data clearing complete');
+  },
+
+  // Debug function to see what's stored
+  debugAuthState() {
+    if (typeof window === 'undefined') return;
+
+    console.log('=== AUTH DEBUG STATE ===');
+    console.log('localStorage items:');
+    Object.keys(localStorage).forEach(key => {
+      if (key.startsWith('sb-') || key === 'user_role' || key.includes('supabase')) {
+        console.log(`  ${key}:`, localStorage.getItem(key));
+      }
+    });
+
+    console.log('sessionStorage items:');
+    Object.keys(sessionStorage).forEach(key => {
+      if (key.startsWith('sb-') || key.includes('supabase')) {
+        console.log(`  ${key}:`, sessionStorage.getItem(key));
+      }
+    });
+    console.log('======================');
   },
 
   onAuthStateChange(callback: (user: AuthUser | null) => void): {

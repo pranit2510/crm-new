@@ -45,6 +45,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     } catch (error) {
       console.error('Error clearing auth data:', error);
       // Force clear even if logout fails
+      authService.clearAllAuthData();
       setUser(null);
       setError(null);
     }
@@ -126,7 +127,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         
         // Clear potentially corrupted auth data
         try {
-          await clearAuthData();
+          console.log('Clearing corrupted auth data...');
+          authService.clearAllAuthData();
         } catch (clearError) {
           console.error('Failed to clear auth data:', clearError);
         }
@@ -134,7 +136,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         setUser(null);
         setLoading(false);
         setInitialized(true);
-        setError('Authentication initialization failed');
+        setError('Authentication initialization failed - cleared corrupted data');
       }
     };
 
