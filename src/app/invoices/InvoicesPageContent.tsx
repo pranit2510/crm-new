@@ -3,7 +3,7 @@
 import { useMemo, useState } from 'react'
 import Link from 'next/link'
 import {
-  PlusCircle, Search, Send, Edit3, Trash2, Download, Eye, DollarSign, Clock, FileText,
+  PlusCircle, Search, Send, Edit3, Trash2, Download, Eye, DollarSign, Clock, FileText, MessageSquare,
 } from 'lucide-react'
 import {
     invoiceOperations,          // now has .delete  .update  .downloadPDF  .send
@@ -72,6 +72,20 @@ export default function InvoicesPageContent(
         /* 4 — always re-enable the dropdown */
         setBusy(null)
       }
+  }
+
+  const sendSMS = async (id: number) => {
+    setBusy(id)
+    try {
+      const result = await invoiceOperations.sendSMS(id)
+      alert(`Invoice sent via SMS 📱\nTo: ${result.to}`)
+      // Note: We don't change status for SMS since it's more of a notification
+    } catch (err:any) {
+      alert(err.message ?? 'Could not send SMS')
+    }
+    finally {
+      setBusy(null)
+    }
   }
   
 
@@ -323,14 +337,25 @@ export default function InvoicesPageContent(
                       </button>
 
                       {inv.status === 'draft' && (
-                        <button
-                        disabled={busy === inv.id}
-                        onClick={() => sendMail(inv.id)}
-                        className="text-blue-600 hover:text-blue-700 disabled:opacity-40"
+                        <>
+                          <button
+                            disabled={busy === inv.id}
+                            onClick={() => sendMail(inv.id)}
+                            className="text-blue-600 hover:text-blue-700 disabled:opacity-40"
                             title="Send by e-mail"
-                            >
-      <Send size={16} />
-    </button>
+                          >
+                            <Send size={16} />
+                          </button>
+                          
+                          <button
+                            disabled={busy === inv.id}
+                            onClick={() => sendSMS(inv.id)}
+                            className="text-green-600 hover:text-green-700 disabled:opacity-40"
+                            title="Send by SMS"
+                          >
+                            <MessageSquare size={16} />
+                          </button>
+                        </>
                       )}
 
                       <button

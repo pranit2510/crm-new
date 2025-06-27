@@ -313,6 +313,12 @@ export const invoiceOperations = {
     const res = await fetch(`/invoices/${id}/send`, { method: 'POST' })
     if (!res.ok) throw new Error((await res.json()).error ?? 'Send failed')
   },
+
+  async sendSMS(id: number) {
+    const res = await fetch(`/invoices/${id}/sms`, { method: 'POST' })
+    if (!res.ok) throw new Error((await res.json()).error ?? 'SMS send failed')
+    return await res.json()
+  },
   async delete(id: number) {
     const { error } = await supabase
       .from('invoices')
