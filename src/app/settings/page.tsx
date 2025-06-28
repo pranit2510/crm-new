@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useState, ChangeEvent, FormEvent } from "react";
-import { supabase } from "@/lib/supabase";
+import { supabase } from "@/lib/supabase-client";
 import { Save } from "lucide-react";
 
 const initialProfile = {

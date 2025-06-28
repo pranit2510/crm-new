@@ -1,4 +1,4 @@
-import { supabase } from './supabase'
+import { supabase } from './supabase-client'
 import { leadConversionOperations } from './lead-conversion'
 import { quoteConversionOperations } from './quote-conversion'
 

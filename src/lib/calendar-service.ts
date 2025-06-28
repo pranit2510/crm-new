@@ -1,4 +1,4 @@
-import { supabase } from './supabase'
+import { supabase } from './supabase-client'
 
 export const calendarService = {
   async scheduleJob(jobId: number, startDate: Date, endDate: Date) {
