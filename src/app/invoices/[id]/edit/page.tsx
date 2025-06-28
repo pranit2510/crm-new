@@ -109,7 +109,7 @@ export default function EditInvoicePage() {
   const updateItem = (id: string, field: keyof LineItem, value: any) => {
     setLineItems(items => items.map(item => 
       item.id === id 
-        ? { ...item, [field]: field === 'description' ? value : Number(value) || 0 }
+        ? { ...item, [field]: field === 'description' ? value : (value ? Number(value) : 0) }
         : item
     ))
   }
@@ -253,7 +253,7 @@ export default function EditInvoicePage() {
                 placeholder="Qty"
                 type="number" 
                 min={0}
-                value={item.quantity}
+                value={item.quantity || ''}
                 onChange={e => updateItem(item.id, 'quantity', e.target.value)}
               />
               <input 
@@ -262,7 +262,7 @@ export default function EditInvoicePage() {
                 type="number" 
                 step="0.01" 
                 min={0}
-                value={item.unitPrice}
+                value={item.unitPrice || ''}
                 onChange={e => updateItem(item.id, 'unitPrice', e.target.value)}
               />
               {idx > 0 && (

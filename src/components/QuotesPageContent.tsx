@@ -8,6 +8,7 @@ import {
   Send,
   Edit3,
   Trash2,
+  MessageSquare,
 } from 'lucide-react'
 import { useRoleRedirect } from '@/lib/hooks/useRoleRedirect';
 import {
@@ -44,6 +45,7 @@ export default function QuotesPageContent({ initialQuotes }: Props) {
   const [status, setStatus]   = useState<QuoteStatus | 'all'>('all')
   const [busy, setBusy]       = useState<number | null>(null)     // generic row-busy
   const [emailBusy, setEmailBusy] = useState<number | null>(null) // send-mail spinner
+  const [smsBusy, setSmsBusy] = useState<number | null>(null)     // send-SMS spinner
   useRoleRedirect(['admin', 'user']); 
   /* ---------- send-e-mail ------------------------------------------- */
   const sendEmail = async (qid: number) => {
@@ -66,6 +68,28 @@ export default function QuotesPageContent({ initialQuotes }: Props) {
       alert(`Could not send e-mail: ${(err as Error).message}`)
     } finally {
       setEmailBusy(null)
+    }
+  }
+
+  /* ---------- send-SMS ----------------------------------------------- */
+  const sendSMS = async (qid: number) => {
+    setSmsBusy(qid)
+    try {
+      // server route lives at /quotes/[id]/sms (NOT under /api)
+      const res = await fetch(`/quotes/${qid}/sms`, { method: 'POST' })
+
+      if (!res.ok) {
+        const { error } = await res.json()
+        throw new Error(error ?? 'Unknown error')
+      }
+
+      const { to } = await res.json()
+      alert(`Quote sent via SMS 📱\nTo: ${to}`)
+      // Note: We don't change status for SMS since it's more of a notification
+    } catch (err) {
+      alert(`Could not send SMS: ${(err as Error).message}`)
+    } finally {
+      setSmsBusy(null)
     }
   }
 
@@ -245,18 +269,33 @@ export default function QuotesPageContent({ initialQuotes }: Props) {
 
                     {/* send e-mail (only for drafts) */}
                     {q.status === 'draft' && (
-                      <button
-                        disabled={emailBusy === q.id}
-                        onClick={() => sendEmail(q.id)}
-                        className="text-blue-600 hover:text-blue-700 disabled:opacity-40"
-                        title="Send to client"
-                      >
-                        {emailBusy === q.id
-                          ? (
-                            <span className="inline-block animate-spin w-4 h-4 border-2 border-blue-400 border-t-transparent rounded-full" />
-                          ) : <Send size={16} />
-                        }
-                      </button>
+                      <>
+                        <button
+                          disabled={emailBusy === q.id}
+                          onClick={() => sendEmail(q.id)}
+                          className="text-blue-600 hover:text-blue-700 disabled:opacity-40"
+                          title="Send by e-mail"
+                        >
+                          {emailBusy === q.id
+                            ? (
+                              <span className="inline-block animate-spin w-4 h-4 border-2 border-blue-400 border-t-transparent rounded-full" />
+                            ) : <Send size={16} />
+                          }
+                        </button>
+                        
+                        <button
+                          disabled={smsBusy === q.id}
+                          onClick={() => sendSMS(q.id)}
+                          className="text-green-600 hover:text-green-700 disabled:opacity-40"
+                          title="Send by SMS"
+                        >
+                          {smsBusy === q.id
+                            ? (
+                              <span className="inline-block animate-spin w-4 h-4 border-2 border-green-400 border-t-transparent rounded-full" />
+                            ) : <MessageSquare size={16} />
+                          }
+                        </button>
+                      </>
                     )}
 
                     {/* create invoice (accepted & not yet invoiced) */}

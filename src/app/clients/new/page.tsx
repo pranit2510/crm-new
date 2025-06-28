@@ -152,8 +152,8 @@ const CreateClientPage = () => {
           <input
             type='number'
             id='estimatedValue'
-            value={estimatedValue}
-            onChange={e => setEstimatedValue(Number(e.target.value))}
+            value={estimatedValue || ''}
+            onChange={e => setEstimatedValue(e.target.value ? Number(e.target.value) : 0)}
             className='default-input'
             min={0}
             step={0.01}

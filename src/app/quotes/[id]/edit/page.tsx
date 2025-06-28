@@ -80,8 +80,8 @@ export default function EditQuotePage () {
           <label className="form-label">Amount ($)</label>
           <input
             type="number" min={0} step="0.01"
-            value={amount}
-            onChange={e=>setAmount(parseFloat(e.target.value||'0'))}
+            value={amount || ''}
+            onChange={e=>setAmount(e.target.value ? parseFloat(e.target.value) : 0)}
             className="default-input w-full"
             required
           />

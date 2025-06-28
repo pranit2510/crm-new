@@ -61,7 +61,7 @@ const LeadEditPage = () => {
     const { name, value } = e.target;
     setLeadData((prev: any) => ({
       ...prev,
-      [name]: name === 'estimated_value' ? parseFloat(value) || 0 : value,
+      [name]: name === 'estimated_value' ? (value ? parseFloat(value) : 0) : value,
     }));
   };
 
@@ -112,7 +112,7 @@ const LeadEditPage = () => {
           </div>
           <div>
             <label htmlFor='estimated_value' className='form-label flex items-center'><DollarSign size={14} className="mr-1.5 text-gray-400"/>Estimated Value ($)</label>
-            <input type='number' id='estimated_value' name='estimated_value' value={leadData.estimated_value || 0} onChange={handleInputChange} className='default-input' min="0" step="0.01" required />
+            <input type='number' id='estimated_value' name='estimated_value' value={leadData.estimated_value || ''} onChange={handleInputChange} className='default-input' min="0" step="0.01" required />
           </div>
         </div>
         <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>

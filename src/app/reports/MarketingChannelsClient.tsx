@@ -200,7 +200,7 @@ export default function MarketingChannelsClient ({
                   <input type={k==='channel'?'text':'number'}
                          value={(editFormData as any)[k] ?? r[k] ?? ''}
                          onChange={e=>setEditFormData(p=>({
-                           ...p,[k]:k==='channel'?e.target.value:Number(e.target.value||0)}))}
+                           ...p,[k]:k==='channel'?e.target.value:(e.target.value ? Number(e.target.value) : '')}))}
                          className="w-full px-2 py-1 border rounded"/>
                 ):(
                   <span>{k==='channel'
@@ -250,8 +250,8 @@ export default function MarketingChannelsClient ({
                   {(['cost','leads','jobs','revenue'] as const).map(k=>(
                     <td key={k} className="px-4 py-3"><input type="number"
                       className="w-full px-2 py-1 border rounded"
-                      value={(newRow as any)[k]}
-                      onChange={e=>setNewRow(p=>({...p,[k]:Number(e.target.value||0)}))}/></td>
+                      value={(newRow as any)[k] || ''}
+                      onChange={e=>setNewRow(p=>({...p,[k]:e.target.value ? Number(e.target.value) : 0}))}/></td>
                   ))}
                   <td className="px-4 py-3 text-gray-400" colSpan={3}>auto</td>
                   <td className="px-4 py-3">

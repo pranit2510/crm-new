@@ -102,8 +102,8 @@ export default function JobFormContent({ initialClients, initialTechs }: Props) 
       </label>
 
       <label className="form-label">Budget ($)
-        <input type="number" min={0} step={0.01} value={budget}
-               onChange={e => setBudget(Number(e.target.value))}
+        <input type="number" min={0} step={0.01} value={budget || ''}
+               onChange={e => setBudget(e.target.value ? Number(e.target.value) : 0)}
                className="default-input mt-1" required />
       </label>
 

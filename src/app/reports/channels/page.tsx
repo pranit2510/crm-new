@@ -32,7 +32,7 @@ export default function ChannelReportsPage() {
 
   function handleInputChange(e: React.ChangeEvent<HTMLInputElement>) {
     const { name, value } = e.target;
-    setForm(f => ({ ...f, [name]: name === 'channel' ? value : Number(value) }));
+    setForm(f => ({ ...f, [name]: name === 'channel' ? value : (value ? Number(value) : 0) }));
   }
 
   async function handleSubmit(e: React.FormEvent) {
@@ -68,13 +68,13 @@ export default function ChannelReportsPage() {
       </div>
       <form onSubmit={handleSubmit} className="mb-6 flex flex-wrap gap-2 items-end">
         <input name="channel" value={form.channel} onChange={handleInputChange} placeholder="Channel" required className="border p-1" />
-        <input name="cost" type="number" value={form.cost} onChange={handleInputChange} placeholder="Cost" className="border p-1" />
-        <input name="leads" type="number" value={form.leads} onChange={handleInputChange} placeholder="Leads" className="border p-1" />
-        <input name="jobs" type="number" value={form.jobs} onChange={handleInputChange} placeholder="Jobs" className="border p-1" />
-        <input name="revenue" type="number" value={form.revenue} onChange={handleInputChange} placeholder="Revenue" className="border p-1" />
-        <input name="close_rate" type="number" value={form.close_rate} onChange={handleInputChange} placeholder="Close Rate (%)" className="border p-1" />
-        <input name="cost_per_lead" type="number" value={form.cost_per_lead} onChange={handleInputChange} placeholder="Cost/Lead" className="border p-1" />
-        <input name="roi" type="number" value={form.roi} onChange={handleInputChange} placeholder="ROI (%)" className="border p-1" />
+        <input name="cost" type="number" value={form.cost || ''} onChange={handleInputChange} placeholder="Cost" className="border p-1" />
+        <input name="leads" type="number" value={form.leads || ''} onChange={handleInputChange} placeholder="Leads" className="border p-1" />
+        <input name="jobs" type="number" value={form.jobs || ''} onChange={handleInputChange} placeholder="Jobs" className="border p-1" />
+        <input name="revenue" type="number" value={form.revenue || ''} onChange={handleInputChange} placeholder="Revenue" className="border p-1" />
+        <input name="close_rate" type="number" value={form.close_rate || ''} onChange={handleInputChange} placeholder="Close Rate (%)" className="border p-1" />
+        <input name="cost_per_lead" type="number" value={form.cost_per_lead || ''} onChange={handleInputChange} placeholder="Cost/Lead" className="border p-1" />
+        <input name="roi" type="number" value={form.roi || ''} onChange={handleInputChange} placeholder="ROI (%)" className="border p-1" />
         <button type="submit" className="bg-blue-500 text-white px-3 py-1 rounded">{editingId ? 'Update' : 'Add'} Channel</button>
         {editingId && <button type="button" onClick={() => { setEditingId(null); setForm({ ...form, channel: '', cost: 0, leads: 0, jobs: 0, revenue: 0, close_rate: 0, cost_per_lead: 0, roi: 0 }); }} className="ml-2 text-gray-600">Cancel</button>}
       </form>

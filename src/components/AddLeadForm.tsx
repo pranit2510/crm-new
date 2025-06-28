@@ -101,8 +101,8 @@ export default function AddLeadForm({ onSuccess }: { onSuccess?: () => void }) {
           min="0"
           step="0.01"
           className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
-          value={formData.estimated_value}
-          onChange={(e) => setFormData(prev => ({ ...prev, estimated_value: parseFloat(e.target.value) || 0 }))}
+          value={formData.estimated_value || ''}
+          onChange={(e) => setFormData(prev => ({ ...prev, estimated_value: e.target.value ? parseFloat(e.target.value) : 0 }))}
         />
       </div>
 

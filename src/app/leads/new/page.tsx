@@ -42,7 +42,7 @@ const CreateLeadPage = () => {
     const { name, value } = e.target;
     setFormData(prev => ({ 
       ...prev, 
-      [name]: name === 'estimated_value' ? parseFloat(value) || 0 : value 
+      [name]: name === 'estimated_value' ? (value ? parseFloat(value) : 0) : value 
     }));
   };
 
@@ -115,7 +115,7 @@ const CreateLeadPage = () => {
               type='number' 
               id='estimated_value' 
               name='estimated_value'
-              value={formData.estimated_value} 
+              value={formData.estimated_value || ''} 
               onChange={handleInputChange} 
               className='default-input' 
               required

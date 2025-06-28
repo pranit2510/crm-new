@@ -130,15 +130,15 @@ function InvoiceForm () {
                    value={it.description}
                    onChange={e=>chgItem(it.id,'description',e.target.value)} />
             <input className="col-span-2 default-input text-right"
-            placeholder="Quanity"
+            placeholder="Quantity"
                    type="number" min={0}
-                   value={it.quantity}
-                   onChange={e=>chgItem(it.id,'quantity',+e.target.value)} />
+                   value={it.quantity || ''}
+                   onChange={e=>chgItem(it.id,'quantity',e.target.value ? +e.target.value : 0)} />
             <input className="col-span-2 default-input text-right"
             placeholder="Unit price"
                    type="number" step="0.01" min={0}
-                   value={it.unitPrice}
-                   onChange={e=>chgItem(it.id,'unitPrice',+e.target.value)} />
+                   value={it.unitPrice || ''}
+                   onChange={e=>chgItem(it.id,'unitPrice',e.target.value ? +e.target.value : 0)} />
             {idx>0 && (
               <button type="button" onClick={()=>rmItem(it.id)}
                       className="col-span-1 text-red-600 hover:text-red-800">

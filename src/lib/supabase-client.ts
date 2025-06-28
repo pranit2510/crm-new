@@ -276,6 +276,15 @@ export const quoteOperations = {
     if (error) throw error;
     return data;
   },
+
+  async sendSMS(id: number) {
+    const res = await fetch(`/quotes/${id}/sms`, { method: 'POST' })
+    if (!res.ok) {
+      const errorData = await res.json().catch(() => ({ error: 'Failed to parse error response' }))
+      throw new Error(errorData.error ?? 'SMS send failed')
+    }
+    return await res.json()
+  },
 }
 
 // Invoice operations
@@ -336,7 +345,7 @@ export const invoiceOperations = {
     const pdf         = new jsPDF()
     const container   = document.createElement('div')
     container.innerHTML = `
-      <h1>Invoice #${invoice.id}</h1>
+      <h1>Invoice</h1>
       <p><b>Client:</b> ${invoice.clients?.name ?? '—'}</p>
       <p><b>Amount:</b> $${invoice.amount.toFixed(2)}</p>
       <p><b>Due:</b>    ${invoice.due_date}</p>

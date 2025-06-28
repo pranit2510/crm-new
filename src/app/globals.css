@@ -161,6 +161,17 @@ body {
   .link-hover:hover::after {
     @apply w-full;
   }
+
+  /* Hide number input spinners/arrows */
+  input[type="number"]::-webkit-outer-spin-button,
+  input[type="number"]::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+  
+  input[type="number"] {
+    -moz-appearance: textfield;
+  }
 }
 
 /* You can add other global styles here if necessary */
