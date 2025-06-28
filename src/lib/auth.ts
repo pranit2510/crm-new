@@ -1,4 +1,4 @@
-import { supabase } from './supabase';
+import { supabase } from './supabase-client';
 import type { AuthChangeEvent, Session, Subscription } from '@supabase/supabase-js';
 
 export type AuthUser = {

@@ -4,12 +4,58 @@ import type { Client, Job, Lead, Quote, Invoice } from './supabase-types'
 export function createClient() {
   return createBrowserClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    {
+      cookies: {
+        // Add better cookie handling for auth persistence
+        get(name: string) {
+          if (typeof window === 'undefined') return undefined;
+          const cookies = document.cookie.split('; ');
+          const cookie = cookies.find(c => c.startsWith(`${name}=`));
+          return cookie?.split('=')[1];
+        },
+        set(name: string, value: string, options?: any) {
+          if (typeof window === 'undefined') return;
+          let cookieString = `${name}=${value}`;
+          if (options?.maxAge) {
+            cookieString += `; max-age=${options.maxAge}`;
+          }
+          if (options?.path) {
+            cookieString += `; path=${options.path}`;
+          }
+          document.cookie = cookieString;
+        },
+        remove(name: string, options?: any) {
+          if (typeof window === 'undefined') return;
+          document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=${options?.path || '/'}`;
+        }
+      },
+      auth: {
+        detectSessionInUrl: true,
+        persistSession: true,
+        autoRefreshToken: true,
+        // Add storage key prefix to avoid conflicts
+        storageKey: 'voltflow-auth',
+      }
+    }
   )
 }
 
 // Export a singleton instance for use throughout the app
 export const supabase = createClient()
+
+// Add a helper to check and refresh session
+export async function getSession() {
+  const { data: { session }, error } = await supabase.auth.getSession();
+  
+  if (error || !session) {
+    // Try to refresh
+    const { data: { session: refreshedSession } } = await supabase.auth.refreshSession();
+    return refreshedSession;
+  }
+  
+  return session;
+}
 
 // Client operations
 export const clientOperations = {

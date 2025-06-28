@@ -1,4 +1,4 @@
-import { supabase } from './supabase'
+import { supabase } from './supabase-client'
 import { clientOperations } from './supabase-client'
 import type { Client } from './supabase-types'
 
