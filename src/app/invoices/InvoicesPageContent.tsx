@@ -57,6 +57,7 @@ export default function InvoicesPageContent(
   const [status,  setStatus]  = useState<InvoiceStatus | 'all'>('all')
   const [overdue, setOverdue] = useState<'all' | 'overdue' | 'not'>('all')
   const [busy,    setBusy]    = useState<number | null>(null)
+  const [isLoading, setIsLoading] = useState(false)
   useRoleRedirect(['admin', 'user']); 
   // top-level inside the component
   const sendMail = async (id: number) => {
@@ -148,20 +149,25 @@ export default function InvoicesPageContent(
   
 
   const refreshFromServer = async () => {
-    const fresh = await invoiceOperations.getAll()      // <- already exported
-    setRows(fresh.map(inv => ({
-      id: inv.id,
-      amount: inv.amount,
-      status: inv.status,
-      invoiceDate: inv.invoice_date,
-      dueDate: inv.due_date,
-      notes: inv.payment_terms,
-      client: { id: inv.clients?.id, name: inv.clients?.name ?? '—' },
-      job  : inv.jobs ? { id: inv.jobs.id, title: inv.jobs.title } : undefined,
-      quote: inv.quotes ? { id: inv.quotes.id } : undefined,
-      paidAmount : inv.paid_amount,
-      overdueDays: inv.overdue_days,
-    })))
+    setIsLoading(true)
+    try {
+      const fresh = await invoiceOperations.getAll()      // <- already exported
+      setRows(fresh.map(inv => ({
+        id: inv.id,
+        amount: inv.amount,
+        status: inv.status,
+        invoiceDate: inv.invoice_date,
+        dueDate: inv.due_date,
+        notes: inv.payment_terms,
+        client: { id: inv.clients?.id, name: inv.clients?.name ?? '—' },
+        job  : inv.jobs ? { id: inv.jobs.id, title: inv.jobs.title } : undefined,
+        quote: inv.quotes ? { id: inv.quotes.id } : undefined,
+        paidAmount : inv.paid_amount,
+        overdueDays: inv.overdue_days,
+      })))
+    } finally {
+      setIsLoading(false)
+    }
   }
   
 
@@ -230,8 +236,14 @@ export default function InvoicesPageContent(
       </div>
 
       {/* table ------------------------------------------------------- */}
-      {rows.length === 0 ? (
+      {isLoading ? (
         <SkeletonLoader variant="table" />
+      ) : rows.length === 0 ? (
+        <div className="bg-white shadow rounded-lg p-8 text-center text-gray-500">
+          <FileText className="h-12 w-12 mx-auto mb-4 text-gray-400" />
+          <p className="text-lg font-medium">No invoices found</p>
+          <p className="text-sm">Create your first invoice to get started</p>
+        </div>
       ) : (
         <div className="bg-white shadow rounded-lg overflow-x-auto">
           <table className="min-w-full divide-y divide-gray-200">

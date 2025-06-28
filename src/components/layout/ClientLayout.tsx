@@ -32,7 +32,8 @@ export function ClientLayout({ children }: ClientLayoutProps) {
     }
   }, [user, loading, initialized, isPublicPage, router, pathname]);
 
-  if (!initialized || loading) {
+  // Show loading only if we don't have any initial data and auth is still loading
+  if (!initialized && loading) {
     return (
       <div className="flex h-screen items-center justify-center">
         <LoadingSpinner size="lg" />
@@ -46,6 +47,7 @@ export function ClientLayout({ children }: ClientLayoutProps) {
   }
 
   // If we're not on a public page and there's no user, show loading while redirecting
+  // But only if auth is fully initialized to avoid premature redirects
   if (!user && !loading && initialized && !isPublicPage) {
     return (
       <div className="flex h-screen items-center justify-center">
@@ -60,6 +62,7 @@ export function ClientLayout({ children }: ClientLayoutProps) {
       <div className="flex flex-1 flex-col overflow-hidden">
         <Header />
         <main className="flex-1 overflow-y-auto overflow-x-visible p-4 md:p-6">
+          {/* Show content immediately, even if auth is still loading */}
           {children}
         </main>
       </div>

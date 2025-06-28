@@ -92,7 +92,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
             setInitialized(true);
             setError('Authentication timeout');
           }
-        }, 3000); // 3 second timeout
+        }, 1000); // 1 second timeout (reduced from 3)
 
         // Get current user
         const currentUser = await authService.getCurrentUser();
