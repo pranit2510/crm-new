@@ -17,7 +17,7 @@ export function ClientLayout({ children }: ClientLayoutProps) {
   const { user, loading, initialized } = useAuth();
   const router = useRouter();
   // Check if we're on a public page
-  const isPublicPage = pathname === '/login' || pathname === '/register';
+  const isPublicPage = pathname === '/login' || pathname === '/signup' || pathname === '/register' || pathname === '/forgot-password' || pathname === '/reset-password';
 
   // Handle redirect in useEffect to avoid setState during render
   useEffect(() => {

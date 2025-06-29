@@ -1,65 +1,92 @@
 'use client';
 
-import React, { useState } from 'react';
-import { useRouter } from 'next/navigation';
+import React, { useState, useEffect } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
-import { Eye, EyeOff, Zap, UserPlus, AlertCircle, CheckCircle } from 'lucide-react';
+import { Eye, EyeOff, Key, CheckCircle, AlertCircle } from 'lucide-react';
 import { supabase } from '@/lib/supabase-client';
 
-export default function SignupPage() {
+const ResetPasswordPage = () => {
   const router = useRouter();
-  const [formData, setFormData] = useState({
-    email: '',
-    password: '',
-    confirmPassword: ''
-  });
+  const searchParams = useSearchParams();
+  const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
+  const [validating, setValidating] = useState(true);
 
-  const validatePassword = (password: string) => {
-    if (password.length < 6) {
+  useEffect(() => {
+    const validateSession = async () => {
+      try {
+        const { data: { session }, error } = await supabase.auth.getSession();
+        
+        if (error || !session) {
+          setError('Invalid or expired reset link. Please request a new password reset.');
+          setValidating(false);
+          return;
+        }
+
+        // Check if this is actually a password reset session
+        const accessToken = searchParams?.get('access_token');
+        const refreshToken = searchParams?.get('refresh_token');
+        
+        if (accessToken && refreshToken) {
+          // Set the session with the tokens from the URL
+          const { error: setSessionError } = await supabase.auth.setSession({
+            access_token: accessToken,
+            refresh_token: refreshToken
+          });
+          
+          if (setSessionError) {
+            setError('Invalid reset link. Please request a new password reset.');
+          }
+        }
+        
+        setValidating(false);
+      } catch (err) {
+        setError('An error occurred while validating your reset link.');
+        setValidating(false);
+      }
+    };
+
+    validateSession();
+  }, [searchParams]);
+
+  const validatePassword = (pwd: string) => {
+    if (pwd.length < 6) {
       return 'Password must be at least 6 characters long';
     }
     return null;
   };
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
-    if (error) setError(null);
-  };
-
-  const handleSignup = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setLoading(true);
     setError(null);
 
     // Validate password
-    const passwordError = validatePassword(formData.password);
+    const passwordError = validatePassword(password);
     if (passwordError) {
       setError(passwordError);
-      setLoading(false);
       return;
     }
 
-    // Check if passwords match
-    if (formData.password !== formData.confirmPassword) {
+    if (password !== confirmPassword) {
       setError('Passwords do not match');
-      setLoading(false);
       return;
     }
+
+    setLoading(true);
 
     try {
-      const { data, error: signupError } = await supabase.auth.signUp({
-        email: formData.email,
-        password: formData.password,
+      const { error } = await supabase.auth.updateUser({
+        password: password
       });
 
-      if (signupError) {
-        setError(signupError.message);
+      if (error) {
+        setError(error.message);
       } else {
         setSuccess(true);
         // Redirect to login after 3 seconds
@@ -74,6 +101,17 @@ export default function SignupPage() {
     }
   };
 
+  if (validating) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-4">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
+          <p className="mt-4 text-gray-600">Validating reset link...</p>
+        </div>
+      </div>
+    );
+  }
+
   if (success) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-4">
@@ -84,9 +122,9 @@ export default function SignupPage() {
                 <CheckCircle className="h-8 w-8 text-green-600" />
               </div>
             </div>
-            <h2 className="text-2xl font-bold text-gray-900 mb-4">Account created!</h2>
+            <h2 className="text-2xl font-bold text-gray-900 mb-4">Password updated!</h2>
             <p className="text-gray-600 mb-6">
-              Your account has been successfully created. You can now sign in with your credentials.
+              Your password has been successfully updated. You can now sign in with your new password.
             </p>
             <p className="text-sm text-gray-500 mb-6">
               Redirecting to login page in 3 seconds...
@@ -109,15 +147,17 @@ export default function SignupPage() {
         <div className="text-center">
           <div className="flex justify-center items-center mb-4">
             <div className="bg-primary p-3 rounded-xl">
-              <Zap className="h-8 w-8 text-white" />
+              <Key className="h-8 w-8 text-white" />
             </div>
           </div>
-          <h2 className="text-3xl font-bold text-gray-900">Create your account</h2>
-          <p className="mt-2 text-gray-600">Join VoltFlow CRM and manage your business</p>
+          <h2 className="text-3xl font-bold text-gray-900">Reset your password</h2>
+          <p className="mt-2 text-gray-600">
+            Enter your new password below
+          </p>
         </div>
 
         <div className="bg-white rounded-xl shadow-lg p-8">
-          <form onSubmit={handleSignup} className="space-y-6">
+          <form onSubmit={handleSubmit} className="space-y-6">
             {error && (
               <div className="bg-red-50 border border-red-200 rounded-lg p-4 flex items-center">
                 <AlertCircle className="h-5 w-5 text-red-500 mr-2 flex-shrink-0" />
@@ -126,26 +166,8 @@ export default function SignupPage() {
             )}
 
             <div>
-              <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
-                Email Address
-              </label>
-              <input
-                id="email"
-                name="email"
-                type="email"
-                required
-                autoComplete="email"
-                value={formData.email}
-                onChange={handleInputChange}
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent transition-all duration-200"
-                placeholder="Enter your email"
-                disabled={loading}
-              />
-            </div>
-
-            <div>
               <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-2">
-                Password
+                New Password
               </label>
               <div className="relative">
                 <input
@@ -153,10 +175,10 @@ export default function SignupPage() {
                   name="password"
                   type={showPassword ? 'text' : 'password'}
                   required
-                  value={formData.password}
-                  onChange={handleInputChange}
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
                   className="w-full px-4 py-3 pr-12 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent transition-all duration-200"
-                  placeholder="Create a password"
+                  placeholder="Enter your new password"
                   disabled={loading}
                 />
                 <button
@@ -175,7 +197,7 @@ export default function SignupPage() {
 
             <div>
               <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700 mb-2">
-                Confirm Password
+                Confirm New Password
               </label>
               <div className="relative">
                 <input
@@ -183,10 +205,10 @@ export default function SignupPage() {
                   name="confirmPassword"
                   type={showConfirmPassword ? 'text' : 'password'}
                   required
-                  value={formData.confirmPassword}
-                  onChange={handleInputChange}
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
                   className="w-full px-4 py-3 pr-12 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent transition-all duration-200"
-                  placeholder="Confirm your password"
+                  placeholder="Confirm your new password"
                   disabled={loading}
                 />
                 <button
@@ -202,9 +224,9 @@ export default function SignupPage() {
 
             <button
               type="submit"
-              disabled={loading || !formData.email || !formData.password || !formData.confirmPassword}
+              disabled={loading || !password || !confirmPassword}
               className={`w-full flex items-center justify-center py-3 px-4 rounded-lg text-white font-medium transition-all duration-200 ${
-                loading || !formData.email || !formData.password || !formData.confirmPassword
+                loading || !password || !confirmPassword
                   ? 'bg-gray-400 cursor-not-allowed'
                   : 'bg-primary hover:bg-primary-dark hover:shadow-lg'
               }`}
@@ -212,30 +234,29 @@ export default function SignupPage() {
               {loading ? (
                 <>
                   <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-2"></div>
-                  Creating account...
+                  Updating password...
                 </>
               ) : (
                 <>
-                  <UserPlus className="h-5 w-5 mr-2" />
-                  Create account
+                  <Key className="h-5 w-5 mr-2" />
+                  Update password
                 </>
               )}
             </button>
 
             <div className="text-center">
-              <p className="text-sm text-gray-600">
-                Already have an account?{' '}
-                <Link
-                  href="/login"
-                  className="text-primary hover:text-primary-dark transition-colors duration-200 font-medium"
-                >
-                  Sign in
-                </Link>
-              </p>
+              <Link
+                href="/login"
+                className="text-sm text-primary hover:text-primary-dark transition-colors duration-200"
+              >
+                Back to login
+              </Link>
             </div>
           </form>
         </div>
       </div>
     </div>
   );
-} 
+};
+
+export default ResetPasswordPage; 

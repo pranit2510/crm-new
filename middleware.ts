@@ -3,6 +3,12 @@ import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
 
 export async function middleware(request: NextRequest) {
+  // Skip middleware for auth pages
+  const authPages = ['/login', '/signup', '/forgot-password', '/reset-password'];
+  if (authPages.includes(request.nextUrl.pathname)) {
+    return NextResponse.next();
+  }
+
   let response = NextResponse.next({
     request: {
       headers: request.headers,
@@ -33,10 +39,6 @@ export async function middleware(request: NextRequest) {
     if (!session) {
     return NextResponse.redirect(new URL('/login', request.url))
     }
-    }
-    // Redirect to dashboard if logged in and trying to access login
-    if (request.nextUrl.pathname === '/login' && session) {
-    return NextResponse.redirect(new URL('/', request.url))
     }
     return response
     }
