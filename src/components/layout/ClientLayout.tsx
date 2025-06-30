@@ -57,10 +57,10 @@ export function ClientLayout({ children }: ClientLayoutProps) {
   }
 
   return (
-    <div className="flex h-screen bg-gray-100">
-      <Sidebar />
-      <div className="flex flex-1 flex-col overflow-hidden">
-        <Header />
+    <div className="h-screen bg-gray-100">
+      <Header />
+      <div className="flex h-[calc(100vh-4rem)]">
+        <Sidebar />
         <main className="flex-1 overflow-y-auto overflow-x-visible p-4 md:p-6">
           {/* Show content immediately, even if auth is still loading */}
           {children}

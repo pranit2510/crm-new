@@ -3,10 +3,15 @@
 @tailwind utilities;
 
 /* FullCalendar Styles - REMOVING THESE FROM HERE */
+
 /* @import '@fullcalendar/common/main.css'; */
+
 /* @import '@fullcalendar/daygrid/main.css'; */
+
 /* @import '@fullcalendar/timegrid/main.css'; */
+
 /* @import '@fullcalendar/list/main.css'; */
+
 /* End FullCalendar Styles */
 
 :root {
@@ -14,22 +19,35 @@
      unless for very specific overrides not covered by utility classes.
      For now, keeping them for potential direct CSS usage if desired.
   */
-  --background: #ffffff; /* Default white, can be overridden by body bg-light */
+  --background: #fff; /* Default white, can be overridden by body bg-light */
   --foreground: #111827; /* Default dark gray, can be overridden by body text-dark */
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
     /* Dark mode will be a future enhancement, so these are placeholders or can be removed for now if not used. */
+
     /* --background: #0a0a0a; */
+
     /* --foreground: #ededed; */
   }
 }
 
+html, body {
+  @apply bg-light text-dark antialiased;
+
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  overflow-x: hidden;
+
+  /* Ensure a base font size if needed, though Tailwind's preflight often handles this */
+
+  /* font-size: 16px; */ 
+}
+
 body {
   @apply bg-light text-dark antialiased;
-  /* Ensure a base font size if needed, though Tailwind's preflight often handles this */
-  /* font-size: 16px; */ 
 }
 
 /* Custom Button Styles */
@@ -40,124 +58,156 @@ body {
            active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed
            transition-all duration-150 ease-in-out transform whitespace-nowrap;
   }
+
   .btn-secondary {
     @apply inline-flex items-center justify-center bg-gray-200 text-gray-700 px-4 py-2 rounded-md hover:bg-gray-300 
            focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500
            active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed
            transition-all duration-150 ease-in-out transform whitespace-nowrap;
   }
+
   /* Basic Form Styling - can be expanded */
   .form-label {
     @apply block text-sm font-medium text-gray-700 mb-1;
   }
+
   .default-input,
   .default-select,
   .default-textarea {
     @apply block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary sm:text-sm;
   }
+
   .default-select {
     @apply pr-8; /* For select dropdown arrow */
   }
+
   .btn-sm {
     @apply text-sm px-3 py-1.5;
   }
+
   .input-sm {
     @apply py-1.5 px-2 text-xs rounded-md; /* Added rounded-md for consistency */
   }
+
   /* Add more button variants or other component styles here if needed */
   .card-hover {
     @apply hover:shadow-lg hover:border-primary/30 transition-all duration-200 ease-in-out;
   }
+
   .skeleton {
     @apply animate-pulse bg-gray-200 rounded;
   }
+
   .skeleton-text {
     @apply h-4 bg-gray-200 rounded animate-pulse;
   }
+
   .skeleton-box {
     @apply bg-gray-200 rounded animate-pulse;
   }
+
   @keyframes shimmer {
     0% {
       background-position: -1000px 0;
     }
+
     100% {
       background-position: 1000px 0;
     }
   }
+
   .shimmer {
     animation: shimmer 2s infinite linear;
     background: linear-gradient(to right, #f0f0f0 4%, #e0e0e0 25%, #f0f0f0 36%);
     background-size: 1000px 100%;
   }
+
   @keyframes fadeIn {
     from {
       opacity: 0;
       transform: translateY(10px);
     }
+
     to {
       opacity: 1;
       transform: translateY(0);
     }
   }
+
   .fade-in {
     animation: fadeIn 0.3s ease-out;
   }
+
   @keyframes fadeOut {
     from {
       opacity: 1;
     }
+
     to {
       opacity: 0;
     }
   }
+
   .fade-out {
     animation: fadeOut 0.3s ease-out forwards;
   }
+
   @keyframes slideInLeft {
     from {
       transform: translateX(-100%);
     }
+
     to {
       transform: translateX(0);
     }
   }
+
   @keyframes slideInRight {
     from {
       transform: translateX(100%);
     }
+
     to {
       transform: translateX(0);
     }
   }
+
   .animate-slide-in-left {
     animation: slideInLeft 0.2s ease-out;
   }
+
   .animate-slide-in-right {
     animation: slideInRight 0.2s ease-out;
   }
+
   .spinner {
     @apply inline-block w-4 h-4 border-2 border-gray-300 border-t-primary rounded-full animate-spin;
   }
+
   .default-input {
     @apply w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm 
            focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary
            transition-all duration-150 ease-in-out;
   }
+
   .default-select {
     @apply w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm 
            focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary
            transition-all duration-150 ease-in-out;
   }
+
   .table-row-hover {
     @apply hover:bg-gray-50 transition-colors duration-150 ease-in-out cursor-pointer;
   }
+
   .link-hover {
     @apply relative hover:text-primary transition-colors duration-150 ease-in-out;
   }
+
   .link-hover::after {
     @apply content-[''] absolute left-0 bottom-0 w-0 h-0.5 bg-primary transition-all duration-200 ease-in-out;
   }
+
   .link-hover:hover::after {
     @apply w-full;
   }
@@ -165,12 +215,12 @@ body {
   /* Hide number input spinners/arrows */
   input[type="number"]::-webkit-outer-spin-button,
   input[type="number"]::-webkit-inner-spin-button {
-    -webkit-appearance: none;
+    appearance: none;
     margin: 0;
   }
   
   input[type="number"] {
-    -moz-appearance: textfield;
+    appearance: textfield;
   }
 }
 
@@ -222,9 +272,11 @@ body {
   0%, 100% {
     transform: translateX(0);
   }
+
   10%, 30%, 50%, 70%, 90% {
     transform: translateX(-10px);
   }
+
   20%, 40%, 60%, 80% {
     transform: translateX(10px);
   }

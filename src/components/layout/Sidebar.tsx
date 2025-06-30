@@ -49,7 +49,7 @@ const navItems: NavItem[] = [
     label: 'Dashboard', 
     icon: LayoutDashboard, 
     section: 'overview',
-    description: 'Business overview & metrics'
+    description: ''
   },
   
   // Primary Business Flow (Lead → Client → Job → Quote → Invoice)
@@ -58,42 +58,42 @@ const navItems: NavItem[] = [
     label: 'Leads', 
     icon: Lightbulb, 
     section: 'flow',
-    description: 'Potential customers & opportunities'
+    description: ''
   },
   { 
     href: '/clients', 
     label: 'Clients', 
     icon: Users, 
     section: 'flow',
-    description: 'Customer relationships & status'
+    description: ''
   },
   { 
     href: '/jobs', 
     label: 'Jobs', 
     icon: Briefcase, 
     section: 'flow',
-    description: 'Project work & assignments'
+    description: ''
   },
   { 
     href: '/technicians', 
     label: 'Technicians', 
     icon: Users, 
     section: 'flow',
-    description: 'Manage field technicians'
+    description: ''
   },
   { 
     href: '/quotes', 
     label: 'Quotes', 
     icon: FileText, 
     section: 'flow',
-    description: 'Pricing proposals & estimates'
+    description: ''
   },
   { 
     href: '/invoices', 
     label: 'Invoices', 
     icon: Receipt, 
     section: 'flow',
-    description: 'Billing & payment tracking'
+    description: ''
   },
   
   // Operations & Analytics
@@ -102,14 +102,14 @@ const navItems: NavItem[] = [
     label: 'Calendar', 
     icon: CalendarDays, 
     section: 'operations',
-    description: 'Schedule & appointments'
+    description: ''
   },
   { 
     href: '/reports', 
     label: 'Reports', 
     icon: BarChart3, 
     section: 'operations',
-    description: 'Analytics & business insights'
+    description: ''
   },
   
   // AI & Automation
@@ -118,7 +118,7 @@ const navItems: NavItem[] = [
     label: 'AI Power',
     icon: Sparkles,
     section: 'automation',
-    description: 'AI-powered business tools',
+    description: '',
     subItems: [
       { href: '/ai-power/voice', label: 'Voice Agent', icon: Phone },
       { href: '/ai-power/sms', label: 'SMS Agent', icon: MessageSquare },
@@ -133,7 +133,7 @@ const navItems: NavItem[] = [
     label: 'Settings', 
     icon: SettingsIcon, 
     section: 'system',
-    description: 'System configuration'
+    description: ''
   },
 ];
 

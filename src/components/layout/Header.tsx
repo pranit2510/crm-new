@@ -12,6 +12,7 @@ import {
   LogOut as LogOutIcon,
   Zap,
   X,
+  User,
 } from 'lucide-react';
 import { supabase } from '@/lib/supabase-client';
 import { useAuth } from '@/contexts/AuthContext';
@@ -22,11 +23,29 @@ const Header = () => {
   const [userDropdownOpen, setUserDropdownOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
+  const [userProfile, setUserProfile] = useState<{ name?: string; avatar_url?: string } | null>(null);
   const searchRef = useRef<HTMLInputElement>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
 
-  // User is now provided by AuthContext, no need for local state
+  // Fetch user profile data including avatar
+  useEffect(() => {
+    const fetchUserProfile = async () => {
+      if (user) {
+        const { data, error } = await supabase
+          .from('user_profiles')
+          .select('name, avatar_url')
+          .eq('id', user.id)
+          .single();
+        
+        if (data) {
+          setUserProfile(data);
+        }
+      }
+    };
+
+    fetchUserProfile();
+  }, [user]);
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -77,8 +96,8 @@ const Header = () => {
   };
 
   return (
-    <header className='bg-white text-dark shadow-md sticky top-0 z-50 transition-all duration-200'>
-      <div className='container mx-auto px-4 h-16 flex justify-between items-center'>
+    <header className='bg-white text-dark shadow-md sticky top-0 z-50 transition-all duration-200 w-full m-0 left-0 right-0'>
+      <div className='w-full px-4 sm:px-6 lg:px-8 h-16 flex justify-between items-center max-w-none'>
         {/* Left side: Hamburger Menu (mobile) & App Name/Logo */}
         <div className='flex items-center'>
           <button
@@ -133,19 +152,51 @@ const Header = () => {
           <div className='relative' ref={dropdownRef}>
             <button
               onClick={() => setUserDropdownOpen(!userDropdownOpen)}
-              className='p-1 sm:p-2 rounded-full hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary transition-all duration-200 active:scale-95'
+              className='p-1 rounded-full hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary transition-all duration-200 active:scale-95'
               aria-label='User menu'
               aria-haspopup='true'
               aria-expanded={userDropdownOpen}
             >
-              <UserCircleIcon className='h-7 w-7 text-gray-600 hover:text-gray-900 transition-colors duration-200' />
+              {userProfile?.avatar_url ? (
+                <div className="w-8 h-8 rounded-full overflow-hidden border-2 border-gray-300">
+                  <img 
+                    src={userProfile.avatar_url} 
+                    alt="Profile" 
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+              ) : (
+                <div className="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center">
+                  <User className='h-5 w-5 text-gray-600' />
+                </div>
+              )}
             </button>
             
             {/* Dropdown Menu */}
             {userDropdownOpen && user && (
-              <div className='origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg py-1 bg-white ring-1 ring-black ring-opacity-5 focus:outline-none z-10 fade-in'>
-                <div className='px-4 py-2 border-b border-gray-200'>
-                  <p className='text-sm font-medium text-gray-900'>{user.email || 'User'}</p>
+              <div className='origin-top-right absolute right-0 mt-2 w-56 rounded-md shadow-lg py-1 bg-white ring-1 ring-black ring-opacity-5 focus:outline-none z-10 fade-in'>
+                <div className='px-4 py-3 border-b border-gray-200'>
+                  <div className='flex items-center space-x-3'>
+                    {userProfile?.avatar_url ? (
+                      <div className="w-10 h-10 rounded-full overflow-hidden border-2 border-gray-300 flex-shrink-0">
+                        <img 
+                          src={userProfile.avatar_url} 
+                          alt="Profile" 
+                          className="w-full h-full object-cover"
+                        />
+                      </div>
+                    ) : (
+                      <div className="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center flex-shrink-0">
+                        <User className='h-6 w-6 text-gray-600' />
+                      </div>
+                    )}
+                    <div className='flex-1 min-w-0'>
+                      <p className='text-sm font-medium text-gray-900 truncate'>
+                        {userProfile?.name || 'User'}
+                      </p>
+                      <p className='text-xs text-gray-500 truncate'>{user.email}</p>
+                    </div>
+                  </div>
                 </div>
                 <Link
                   href='/settings'
