@@ -1,5 +1,5 @@
 import { createBrowserClient } from '@supabase/ssr'
-import type { Client, Job, Lead, Quote, Invoice } from './supabase-types'
+import type { Client, Job, Lead, Quote, Invoice, Payment } from './supabase-types'
 
 export function createClient() {
   return createBrowserClient(
@@ -386,6 +386,78 @@ export const invoiceOperations = {
   
   
 }
+
+// Payment operations
+export const paymentOperations = {
+  async create(payment: Partial<Omit<Payment, 'id' | 'created_at'>>) {
+    const { data, error } = await supabase
+      .from('payments')
+      .insert([payment])
+      .select()
+      .single()
+    if (error) throw error
+    return data
+  },
+
+  async getAll() {
+    const { data, error } = await supabase
+      .from('payments')
+      .select('*, clients(*)')
+      .order('created_at', { ascending: false })
+    if (error) throw error
+    return data
+  },
+
+  async getByClientId(clientId: number) {
+    const { data, error } = await supabase
+      .from('payments')
+      .select('*, clients(*)')
+      .eq('client_id', clientId)
+      .order('created_at', { ascending: false })
+    if (error) throw error
+    return data
+  },
+
+  async update(id: number, updates: Partial<Payment>) {
+    const { data, error } = await supabase
+      .from('payments')
+      .update(updates)
+      .eq('id', id)
+      .select()
+      .single()
+    if (error) throw error
+    return data
+  },
+
+  async delete(id: number) {
+    const { error } = await supabase
+      .from('payments')
+      .delete()
+      .eq('id', id)
+    if (error) throw error
+  },
+
+  /* --- optional helper endpoints you can expose via /payments/[id]/* --- */
+  async sendMail(id: number) {
+    const res = await fetch(`/payments/${id}/send`, { method: 'POST' });
+    if (!res.ok) {
+      const err = await res.json();
+      throw new Error(err.error || 'Failed to send email');
+    }
+  },
+
+  async sendSMS(id: number) {
+    const res = await fetch(`/payments/${id}/sms`, { method: 'POST' });
+    if (!res.ok) {
+      const err = await res.json();
+      throw new Error(err.error || 'Failed to send SMS');
+    }
+  },
+
+}
+
+
+
 
 
 // Helper function to generate PDF

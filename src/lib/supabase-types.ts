@@ -12,6 +12,22 @@ export type Client = {
     source: string
     assigned_to: string
   }
+// supabase‑types.ts  (excerpt)
+
+export type Payment = {
+  id: number
+  created_at: string
+  client_id: number | null      // FK → clients.id
+  amount: number                // stored in cents
+  status: 'draft' | 'sent' | 'paid' | 'cancelled'
+  description: string | null
+  payment_url: string | null
+  square_id: string | null
+  order_id: string | null
+}
+
+
+  
   
   export type Job = {
     id: number

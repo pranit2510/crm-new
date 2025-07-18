@@ -1,6 +1,3 @@
-/* ------------------------------------------------------------ */
-/*  src/app/invoices/new/page.tsx – Create-Invoice (Client)     */
-/* ------------------------------------------------------------ */
 'use client'
 
 import { useState, useEffect, FormEvent, Suspense } from 'react'

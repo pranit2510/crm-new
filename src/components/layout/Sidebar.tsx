@@ -23,6 +23,7 @@ import {
   LucideIcon,
   Menu,
   ArrowRight,
+  CreditCard,
 } from 'lucide-react';
 
 interface SubNavItem {
@@ -92,6 +93,13 @@ const navItems: NavItem[] = [
     href: '/invoices', 
     label: 'Invoices', 
     icon: Receipt, 
+    section: 'flow',
+    description: ''
+  },
+  { 
+    href: '/payments', 
+    label: 'Payments', 
+    icon: CreditCard, 
     section: 'flow',
     description: ''
   },
